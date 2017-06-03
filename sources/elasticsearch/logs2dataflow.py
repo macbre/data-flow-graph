@@ -4,6 +4,7 @@ This script demonstates how to transform SQL logs fetched from elasticsearch int
 """
 from __future__ import print_function
 
+import collections
 import time
 import logging
 import re
@@ -27,7 +28,7 @@ def get_log_messages(now, limit=10000):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
-	es = Elasticsearch(host='127.0.0.1', port=59200)
+	es = Elasticsearch(host='127.0.0.1', port=59200, timeout=30)
 
 	# take logs from the last day
 	yesterday = now - 86400
@@ -60,6 +61,7 @@ def extract_table_from_query(query):
 
 def extract_metadata(message):
 	query = re.sub(r'^SQL ', '', message.get('@message'))
+	kind = query.split(' ')[0].upper()
 
 	# sphinx or mysql?
 	db = message.get('@fields').get('database').get('name')
@@ -69,14 +71,13 @@ def extract_metadata(message):
 		# legacy DB logger
 		method = message.get('@context').get('exception').get('trace')[-2]  # /opt/elecena/backend/mq/request.php:421
 		method = '/'.join(method.split('/')[-2:])  # mq/request.php:53
-		method = method.replace(':', '::line ')  # mq/request.php::line 53
+		method = '{}::_{}'.format(method.split(':')[0], kind.lower())  # mq/request.php::UPDATE
 	except AttributeError:
 		method = message.get('@context').get('method')  # Elecena\Services\Sphinx::search
 
 	return dict(
-		# query=query,
 		db=db if db == 'sphinx' else 'mysql',
-		kind=query.split(' ')[0].upper(),
+		kind=kind,
 		table=extract_table_from_query(query) or 'products',
 		method=method,
 		web_request='http_method' in message.get('@fields', {})
@@ -86,7 +87,7 @@ def extract_metadata(message):
 def build_flow_entry(meta):
 	table = '{}:{}'.format(meta.get('db'),meta.get('table'))
 	(cls, edge) = meta.get('method').split('::')
-	reads = meta.get('kind') in ['SELECT', 'CALL']
+	reads = meta.get('kind') not in ['INSERT', 'UPDATE', 'DELETE']
 
 	# code -> method -> DB table (if the code writes to DB)
 	# DB -> method -> code (if the code reads to DB)
@@ -96,12 +97,20 @@ def build_flow_entry(meta):
 		target=cls if reads else table
 	)
 
+def unique(iterable):
+	# for stats and weighting entries
+	c = collections.Counter(iterable)
+	max_value = c.most_common(1)[0][1]
+
+	return [
+		item + "\t{:.4f}".format(1. * c[item] / max_value)
+		for item in iterable
+	]
+
 # take SQL logs from elasticsearch
-messages = get_log_messages(now=int(time.time()), limit=5000)
+messages = get_log_messages(now=int(time.time()), limit=75000)
 
 meta = map(extract_metadata, messages)
-graph = map(build_flow_entry, meta)
-
-# import json; print(json.dumps(meta, indent=True))
+graph = unique(map(build_flow_entry, meta))
 
 print("\n".join(set(graph)))
