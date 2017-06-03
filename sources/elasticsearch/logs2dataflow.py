@@ -6,6 +6,7 @@ from __future__ import print_function
 
 import time
 import logging
+import re
 
 from datetime import datetime
 from dateutil import tz
@@ -52,9 +53,55 @@ def get_log_messages(now, limit=10000):
 	return hits
 
 
+def extract_table_from_query(query):
+	matches = re.search(r'(FROM|INTO|UPDATE) (\w+)', query)
+	return matches.group(2) if matches else None
+
+
+def extract_metadata(message):
+	query = re.sub(r'^SQL ', '', message.get('@message'))
+
+	# sphinx or mysql?
+	db = message.get('@fields').get('database').get('name')
+
+	# code method
+	try:
+		# legacy DB logger
+		method = message.get('@context').get('exception').get('trace')[-2]  # /opt/elecena/backend/mq/request.php:421
+		method = '/'.join(method.split('/')[-2:])  # mq/request.php:53
+		method = method.replace(':', '::line ')  # mq/request.php::line 53
+	except AttributeError:
+		method = message.get('@context').get('method')  # Elecena\Services\Sphinx::search
+
+	return dict(
+		# query=query,
+		db=db if db == 'sphinx' else 'mysql',
+		kind=query.split(' ')[0].upper(),
+		table=extract_table_from_query(query) or 'products',
+		method=method,
+		web_request='http_method' in message.get('@fields', {})
+	)
+
+
+def build_flow_entry(meta):
+	table = '{}:{}'.format(meta.get('db'),meta.get('table'))
+	(cls, edge) = meta.get('method').split('::')
+	reads = meta.get('kind') in ['SELECT', 'CALL']
+
+	# code -> method -> DB table (if the code writes to DB)
+	# DB -> method -> code (if the code reads to DB)
+	return "{source}\t{edge}\t{target}".format(
+		source=table if reads else cls,
+		edge=edge,
+		target=cls if reads else table
+	)
+
 # take SQL logs from elasticsearch
-messages=get_log_messages(now=int(time.time()), limit=50000)
+messages = get_log_messages(now=int(time.time()), limit=5000)
 
-[print(msg.get('@message')[:120]) for msg in messages[:50]]
-print(len(messages))
+meta = map(extract_metadata, messages)
+graph = map(build_flow_entry, meta)
 
+# import json; print(json.dumps(meta, indent=True))
+
+print("\n".join(set(graph)))
