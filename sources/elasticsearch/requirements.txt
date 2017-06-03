@@ -1,0 +1,4 @@
+# https://elasticsearch-py.readthedocs.io/en/master/
+# Elasticsearch 2.x
+elasticsearch>=2.0.0,<3.0.0
+python-dateutil==2.5.3
