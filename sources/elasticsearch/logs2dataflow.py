@@ -15,6 +15,7 @@ from dateutil import tz
 from elasticsearch import Elasticsearch
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def format_index_name(ts, prefix='syslog-ng_'):
@@ -75,6 +76,9 @@ def extract_metadata(message):
 	except AttributeError:
 		method = message.get('@context').get('method')  # Elecena\Services\Sphinx::search
 
+	if '::' not in method:
+		method = method + '::_'
+
 	return dict(
 		db=db if db == 'sphinx' else 'mysql',
 		kind=kind,
@@ -108,9 +112,13 @@ def unique(iterable):
 	]
 
 # take SQL logs from elasticsearch
-messages = get_log_messages(now=int(time.time()), limit=75000)
+messages = get_log_messages(now=int(time.time()), limit=100000)
 
+logger.info('Generating metadata for {} entries...'.format(len(messages)))
 meta = map(extract_metadata, messages)
+
+logger.info('Building dataflow entries...')
 graph = unique(map(build_flow_entry, meta))
 
+logger.info('Done')
 print("\n".join(set(graph)))
