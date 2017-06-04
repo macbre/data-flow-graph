@@ -1,19 +1,41 @@
+html, body {
+  padding: 0;
+  margin: 0;
+}
+
+html {
+  height: 100%;
+}
+
 body {
   font-family: 'Monda', sans-serif;
   letter-spacing: -1px;
+  min-height: 100%;
 
   color: #eee;
-  background: #333;
+
+  background: #333; /* fallback for old browsers */
+  background: linear-gradient(to bottom, #222, #444); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 h1 {
   position: absolute;
   margin: 0;
+  padding: 0.25em 0.75em;
 }
 
-#chart {
-  height: 800px;
-  width: 100%;
+cite {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 0.25em 0.75em;
+  background: #666;
+  font-size: 0.9em;
+}
+
+cite a {
+  color: #fff;
+  font-style: normal;
 }
 
 .node rect {

@@ -29,8 +29,8 @@ var OPACITY = {
     LEFT: OUTER_MARGIN
   },
   TRANSITION_DURATION = 400,
-  HEIGHT = document.body.clientHeight - MARGIN.TOP - MARGIN.BOTTOM,
-  WIDTH = document.body.clientWidth - MARGIN.LEFT - MARGIN.RIGHT,
+  HEIGHT = document.body.clientHeight - MARGIN.TOP - MARGIN.BOTTOM - 20,
+  WIDTH = document.body.clientWidth - MARGIN.LEFT - MARGIN.RIGHT - 20,
   LAYOUT_INTERATIONS = 32,
   REFRESH_INTERVAL = 7000;
 
