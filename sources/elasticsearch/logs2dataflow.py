@@ -12,6 +12,7 @@ import re
 from datetime import datetime
 from dateutil import tz
 
+import sqlparse
 from elasticsearch import Elasticsearch
 
 logging.basicConfig(
@@ -60,14 +61,35 @@ def get_log_messages(now, limit=10000):
 	return hits
 
 
-def extract_table_from_query(query):
+def get_query_metadata(query):
+	# @see https://pypi.python.org/pypi/sqlparse
+	res = sqlparse.parse(query)
+	if res:
+		statement = res[0]
+		sql_type = statement.get_type()  # SELECT, UPDATE, UNKNOWN
+		tables = filter(lambda token: isinstance(token, sqlparse.sql.Identifier), statement.tokens)
+		tables = map(str, tables)
+
+		print(query[:90], tables)
+
+		if sql_type != 'UNKNOWN':
+			return sql_type, tables  # SELECT, (products, )
+
+	kind = query.split(' ')[0]
 	matches = re.search(r'(FROM|INTO|UPDATE) (\w+)', query)
-	return matches.group(2) if matches else None
+	return (kind, (matches.group(2),)) if matches and matches.group(2) is not None else None
 
 
 def extract_metadata(message):
 	query = re.sub(r'^SQL ', '', message.get('@message'))
-	kind = query.split(' ')[0].upper()
+	meta = get_query_metadata(query)
+
+	# print('extract_metadata', query[:90], meta);
+
+	if meta is None:
+		return None
+
+	(kind, table) = meta
 
 	# sphinx or mysql?
 	db = message.get('@fields').get('database').get('name')
@@ -77,7 +99,7 @@ def extract_metadata(message):
 		# legacy DB logger
 		method = message.get('@context').get('exception').get('trace')[-2]  # /opt/elecena/backend/mq/request.php:421
 		method = '/'.join(method.split('/')[-2:])  # mq/request.php:53
-		method = '{}::_{}'.format(method.split(':')[0], kind.lower())  # mq/request.php::UPDATE
+		method = '{}::_{}'.format(method.split(':')[0], kind.lower())  # mq/request.php
 	except AttributeError:
 		method = message.get('@context').get('method')  # Elecena\Services\Sphinx::search
 
@@ -86,8 +108,8 @@ def extract_metadata(message):
 
 	return dict(
 		db=db if db == 'sphinx' else 'mysql',
-		kind=kind,
-		table=extract_table_from_query(query) or 'products',
+		kind=kind,  # SELECT
+		table=table,  # products
 		method=method,
 		web_request='http_method' in message.get('@fields', {})
 	)
@@ -126,10 +148,11 @@ def unique(iterable):
 	return map(format_item, iterable)
 
 # take SQL logs from elasticsearch
-messages = get_log_messages(now=int(time.time()), limit=100000)  # beware of "Out of heap space"
+messages = get_log_messages(now=int(time.time()), limit=100)  # beware of "Out of heap space"
 
 logger.info('Generating metadata for {} entries...'.format(len(messages)))
 meta = map(extract_metadata, messages)
+meta = filter(lambda item: item is not None, meta)
 
 logger.info('Building dataflow entries...')
 graph = unique(map(build_flow_entry, meta))
