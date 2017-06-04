@@ -263,10 +263,12 @@ function update () {
            return link.id == d.id;
         });
 
+	var label = meta.name + "\n";
+
         if (d.direction > 0) {
-          return d.source.name + " -> " + d.target.name + '::' + meta.name; // + "\n" + formatNumber(d.value);
+          return label + d.source.name + " \u21D2 " + d.target.name;
         }
-        return d.target.name + "::" + meta.name + "() <- " + d.source.name; // + "\n" + formatNumber(d.value);
+        return label + d.target.name + " \u21D0 " + d.source.name;
       });
 
       d3.select(this)
