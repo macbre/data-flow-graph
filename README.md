@@ -39,3 +39,4 @@ ImageBot        fetchImage      mysql:products  0.0009
 * [vis.js](https://github.com/almende/vis) for visualization ([a graph example](http://etn.io/))
 * [Interactive & Dynamic Force-Directed Graphs with D3](https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811)
 * [d3.js curved links graph](https://bl.ocks.org/mbostock/4600693)
+* [Bi-directional hierarchical sankey diagram](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779)
