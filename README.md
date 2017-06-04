@@ -1,6 +1,8 @@
 # database-flow-graph
 Takes SQL logs and visualizes how your data flow through the database.
 
+# [Live demo](https://macbre.github.io/database-flow-graph/)
+
 ## `dataflow.tsv`
 
 Visualization is generated for a TSV file with the following format:
