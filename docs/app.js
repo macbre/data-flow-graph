@@ -525,14 +525,26 @@ columns = tsvData.map(function(line) {
 
 // nodes are in columns 1st and 3rd
 nodes = columns.
+	sort(function(a, b) {
+		return b[3] - a[3];
+	}).
 	map(function(line) {return line[0]}).
 	concat(
 		columns.map(function(line) {return line[2];})
 	).
-	filter(onlyUnique);
+	filter(onlyUnique)
 
 // sort nodes alphabetically? (DB on the left, code on the right)
-nodes = nodes.sort();
+//nodes = nodes.sort();
+
+// sort, but ignoring the label prefix
+/**
+nodes = nodes.sort(function(a,b) {
+	return a.split(':').pop().toLowerCase() < b.split(':').pop().toLowerCase() ? -1 : 1;
+});
+**/
+
+console.log(nodes);
 
 // prepare nodes and links for biHiSankey library
 var exampleNodes = nodes.map(function(node, iter) {
@@ -554,10 +566,10 @@ var exampleNodes = nodes.map(function(node, iter) {
 var exampleLinks = columns.map(function(line) {
 	var weight = line[3] && parseFloat(line[3]) || 1;
 
-	// scale using log10
-	//weight = Math.log2(weight * 1000) / 4;
+	weight = Math.max(weight, 0.001);
 
-	 weight = Math.max(weight, 0.01);
+	// scale using log10
+	weight = Math.log10(weight * 10000) / 10;
 
 	return {
 		source: nodes.indexOf(line[0]),
