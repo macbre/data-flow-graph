@@ -30,7 +30,7 @@ var OPACITY = {
   },
   TRANSITION_DURATION = 400,
   HEIGHT = document.body.clientHeight - MARGIN.TOP - MARGIN.BOTTOM - 20,
-  WIDTH = document.body.clientWidth - MARGIN.LEFT - MARGIN.RIGHT - 20,
+  WIDTH = document.body.clientWidth - MARGIN.LEFT - MARGIN.RIGHT - 120,
   LAYOUT_INTERATIONS = 32,
   REFRESH_INTERVAL = 7000;
 
@@ -527,6 +527,9 @@ nodes = columns.
 	).
 	filter(onlyUnique);
 
+// sort nodes alphabetically? (DB on the left, code on the right)
+nodes = nodes.sort();
+
 // prepare nodes and links for biHiSankey library
 var exampleNodes = nodes.map(function(node, iter) {
 	var type = '',
@@ -550,7 +553,7 @@ var exampleLinks = columns.map(function(line) {
 	// scale using log10
 	//weight = Math.log2(weight * 1000) / 4;
 
-	weight = Math.max(weight, 0.075);
+	 weight = Math.max(weight, 0.01);
 
 	return {
 		source: nodes.indexOf(line[0]),
