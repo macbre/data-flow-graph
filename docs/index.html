@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>database-flow-graph | Example</title>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Monda&amp;subset=latin-ext" rel="stylesheet">
+  </head>
+  <body>
+    <h1>database-flow-graph</h1>
+    <cite><a href="https://github.com/macbre/database-flow-graph">github.com/macbre/database-flow-graph</a></cite>
+
+    <div id="chart"></div>
+
+    <script type="data/tsv" id="dataflow">
+mysql:datasheets	getOtherCodes	Elecena\Models\Datasheet	0.0024
+sphinx:parameters	getCategoriesTree	Parameters	0.0001
+sphinx:products	getSnippet	Elecena\Services\Sphinx	0.0127
+mysql:products	_select	mq/request.php	0.0313
+sphinx:products	getKeywords	Elecena\Services\Sphinx	0.0323
+mysql:shops	newFromDB	Elecena\Models\Shop	0.0005
+sphinx:products	getProductsForTags	Elecena\Services\Sphinx	0.0166
+sphinx:datasheets	search	Elecena\Services\Sphinx	0.0321
+mysql:products	getLastChanges	StatsController	0.0003
+currency.php	_	mysql:products	0.0001
+sphinx:products	products	Elecena\Services\Search	0.0126
+mysql:products	getImagesToFetch	ImageBot	0.0008
+mysql:shops	index	PanelController	0.0001
+mysql:products	_describe	mq/request.php	0.0007
+sphinx:products	getIndexCount	Elecena\Services\Sphinx	0.0001
+mysql:producers	_select	mq/request.php	0.0742
+mysql:currencies	_	currency.php	0.0001
+mysql:datasheets	checkIfExists	DatasheetsUpdateScript	0.0798
+mq/request.php	_update	mysql:products	1.0000
+ShopsUpdateScript	run	mysql:products	0.0019
+sphinx:shops	newFromLocation	Elecena\Models\Shop	0.0003
+mq/request.php	_insert	mysql:products	0.0014
+sphinx:parameters	getDatabaseCount	Parameters	0.0002
+mysql:products	run	ShopsUpdateScript	0.0055
+mysql:shops	_select	mq/request.php	0.0169
+sphinx:products	rebuildStats	StatsController	0.0004
+sphinx:datasheets	onGetStats	DatasheetController	0.0001
+sphinx:parameters	getSuggestions	Parameters	0.0014
+mq/request.php	_insert	mysql:shops_stats	0.0038
+mq/request.php	_delete	mysql:shops_stats	0.0004
+sphinx:parameters	getSimilar	Parameters	0.0026
+mysql:products	newFromIds	Elecena\Models\Product	0.0483
+mysql:datasheets	newFromIds	Elecena\Models\Datasheet	0.0165
+sphinx:shops	newFromQuery	Elecena\Models\Shop	0.0014
+mysql:suggest	getSuggestions	Elecena\Services\Sphinx	0.0012
+sphinx:products	getLastChanges	StatsController	0.0003
+mq/request.php	_update	mysql:shops	0.0159
+mysql:parameters	newFromTop	Parameters	0.0004
+sphinx:parameters	getFromCategory	Parameters	0.0001
+ImageBot	fetchImage	mysql:products	0.0009
+sphinx:parameters	newFromCode	Parameters	0.0161
+    </script>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdn.rawgit.com/Neilos/bihisankey/master/bihisankey.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
