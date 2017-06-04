@@ -14,7 +14,12 @@ from dateutil import tz
 
 from elasticsearch import Elasticsearch
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+	level=logging.INFO,
+	format='%(asctime)s %(name)-35s %(levelname)-8s %(message)s',
+	datefmt="%Y-%m-%d %H:%M:%S"
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,7 +34,7 @@ def get_log_messages(now, limit=10000):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
-	es = Elasticsearch(host='127.0.0.1', port=59200, timeout=30)
+	es = Elasticsearch(host='127.0.0.1', port=59200, timeout=120)
 
 	# take logs from the last day
 	yesterday = now - 86400
@@ -106,13 +111,22 @@ def unique(iterable):
 	c = collections.Counter(iterable)
 	max_value = c.most_common(1)[0][1]
 
-	return [
-		item + "\t{:.4f}".format(1. * c[item] / max_value)
-		for item in iterable
-	]
+	def format_item(item):
+		cnt = c[item]
+
+		weight = 1. * cnt / max_value
+		if weight < 0.0001:
+			weight = 0.0001
+
+		# add as edge metadata
+		qps = 1. * cnt / 86400
+
+		return item + "\t{:.4f}\tQPS: {:.4f}".format(weight, qps)
+
+	return map(format_item, iterable)
 
 # take SQL logs from elasticsearch
-messages = get_log_messages(now=int(time.time()), limit=100000)
+messages = get_log_messages(now=int(time.time()), limit=100000)  # beware of "Out of heap space"
 
 logger.info('Generating metadata for {} entries...'.format(len(messages)))
 meta = map(extract_metadata, messages)
