@@ -13,7 +13,7 @@ var OPACITY = {
   TYPES = ["mysql", "sphinx", ""],
   TYPE_COLORS = ["#1b9e77", "#d95f02", "#a5a0e3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"],
   TYPE_HIGHLIGHT_COLORS = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494"],
-  LINK_COLOR = "#b3b3b3",
+  LINK_COLOR = "#666",
   INFLOW_COLOR = "#2E86D1",
   OUTFLOW_COLOR = "#D63028",
   NODE_WIDTH = 52,
@@ -21,7 +21,7 @@ var OPACITY = {
     RADIUS: NODE_WIDTH / 2,
     SPACING: 2
   },
-  OUTER_MARGIN = 10,
+  OUTER_MARGIN = 50,
   MARGIN = {
     TOP: 2 * (COLLAPSER.RADIUS + OUTER_MARGIN),
     RIGHT: OUTER_MARGIN,
@@ -91,9 +91,9 @@ biHiSankey = d3.biHiSankey();
 // Set the biHiSankey diagram properties
 biHiSankey
   .nodeWidth(NODE_WIDTH)
-  .nodeSpacing(20)
-  .linkSpacing(2)
-  .arrowheadScaleFactor(0.5) // Specifies that 0.5 of the link's stroke WIDTH should be allowed for the marker at the end of the link.
+  .nodeSpacing(32)
+  .linkSpacing(5)
+  .arrowheadScaleFactor(0.25) // Specifies that 0.5 of the link's stroke WIDTH should be allowed for the marker at the end of the link.
   .size([WIDTH, HEIGHT]);
 
 path = biHiSankey.link().curvature(0.45);
@@ -421,6 +421,7 @@ function update () {
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
       .attr("transform", null)
+      .attr("fill", "#ddd")
       .text(function (d) { return d.name; })
     .filter(function (d) { return d.x < WIDTH / 2; })
       .attr("x", 6 + biHiSankey.nodeWidth())

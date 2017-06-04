@@ -1,6 +1,9 @@
 body {
   font-family: 'Monda', sans-serif;
   letter-spacing: -1px;
+
+  color: #eee;
+  background: #333;
 }
 
 h1 {
@@ -20,7 +23,7 @@ h1 {
 
 .node text {
   pointer-events: none;
-  text-shadow: 1px 1px 2px #fff;
+  text-shadow: 1px 1px 2px #666;
   font-size: 0.9em;
 }
 
@@ -31,7 +34,7 @@ h1 {
   padding: 3px;
   width: auto;
   height: auto;
-  background-color: #F2F2F2;
+  background-color: #111;
   -webkit-box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.4);
   -mox-box-shadow: 0px 0px 0px 5px rgba(0, 0, 0, 0.4);
   box-shadow: 0px 0px 5px rbga(0, 0, 0, 0.4);
