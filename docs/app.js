@@ -21,7 +21,7 @@ var OPACITY = {
     RADIUS: NODE_WIDTH / 2,
     SPACING: 2
   },
-  OUTER_MARGIN = 30,
+  OUTER_MARGIN = 10,
   MARGIN = {
     TOP: 2 * (COLLAPSER.RADIUS + OUTER_MARGIN),
     RIGHT: OUTER_MARGIN,
@@ -91,8 +91,8 @@ biHiSankey = d3.biHiSankey();
 // Set the biHiSankey diagram properties
 biHiSankey
   .nodeWidth(NODE_WIDTH)
-  .nodeSpacing(10)
-  .linkSpacing(4)
+  .nodeSpacing(20)
+  .linkSpacing(2)
   .arrowheadScaleFactor(0.5) // Specifies that 0.5 of the link's stroke WIDTH should be allowed for the marker at the end of the link.
   .size([WIDTH, HEIGHT]);
 
@@ -544,6 +544,11 @@ var exampleNodes = nodes.map(function(node, iter) {
 
 var exampleLinks = columns.map(function(line) {
 	var weight = line[3] && parseFloat(line[3]) || 1;
+
+	// scale using log10
+	//weight = Math.log2(weight * 1000) / 4;
+
+	weight = Math.max(weight, 0.05);
 
 	return {
 		source: nodes.indexOf(line[0]),
