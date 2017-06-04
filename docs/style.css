@@ -1,3 +1,12 @@
+body {
+  font-family: 'Monda', sans-serif;
+}
+
+h1 {
+  position: absolute;
+  margin: 0;
+}
+
 #chart {
   height: 800px;
   width: 100%;
@@ -11,15 +20,13 @@
 .node text {
   pointer-events: none;
   text-shadow: 1px 1px 2px #fff;
-  font-size: 0.8em;
-  font-family: sans-serif;
+  font-size: 0.9em;
 }
 
 #tooltip {
   position: absolute;
   pointer-events: none;
-  font-size: 0.7em;
-  font-family: sans-serif;
+  font-size: 0.75em;
   padding: 3px;
   width: auto;
   height: auto;
