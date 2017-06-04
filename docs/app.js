@@ -16,7 +16,7 @@ var OPACITY = {
   LINK_COLOR = "#666",
   INFLOW_COLOR = "#2E86D1",
   OUTFLOW_COLOR = "#D63028",
-  NODE_WIDTH = 52,
+  NODE_WIDTH = 30,
   COLLAPSER = {
     RADIUS: NODE_WIDTH / 2,
     SPACING: 2
@@ -258,11 +258,15 @@ function update () {
   linkEnter.on('mouseenter', function (d) {
     if (!isTransitioning) {
       showTooltip().select(".value").text(function () {
-        console.log(d);
+        // find link metadata
+        var meta = exampleLinks.find(function(link) {
+           return link.id == d.id;
+        });
+
         if (d.direction > 0) {
-          return d.source.name + " -> " + d.target.name; // + "\n" + formatNumber(d.value);
+          return d.source.name + " -> " + d.target.name + '::' + meta.name; // + "\n" + formatNumber(d.value);
         }
-        return d.target.name + " <- " + d.source.name; // + "\n" + formatNumber(d.value);
+        return d.target.name + "::" + meta.name + "() <- " + d.source.name; // + "\n" + formatNumber(d.value);
       });
 
       d3.select(this)
@@ -382,7 +386,6 @@ function update () {
         })
         .style("fill-opacity", OPACITY.LINK_DEFAULT);
 
-/**
       tooltip
         .style("left", g.x + MARGIN.LEFT + "px")
         .style("top", g.y + g.height + MARGIN.TOP + 15 + "px")
@@ -390,10 +393,8 @@ function update () {
           .duration(TRANSITION_DURATION)
           .style("opacity", 1).select(".value")
           .text(function () {
-            var additionalInstructions = g.children.length ? "\n(Double click to expand)" : "";
-            return g.name + "\nNet flow: " + formatFlow(g.netFlow) + additionalInstructions;
+            return g.name; //  + "\nNet flow: " + formatFlow(g.netFlow) + additionalInstructions;
           });
-**/
     }
   });
 
@@ -549,7 +550,7 @@ var exampleLinks = columns.map(function(line) {
 	// scale using log10
 	//weight = Math.log2(weight * 1000) / 4;
 
-	weight = Math.max(weight, 0.05);
+	weight = Math.max(weight, 0.075);
 
 	return {
 		source: nodes.indexOf(line[0]),
@@ -574,6 +575,7 @@ var exampleLinks = [
 
 console.log(exampleNodes, exampleLinks);
 
+// @se https://github.com/Neilos/bihisankey
 biHiSankey
   .nodes(exampleNodes)
   .links(exampleLinks)
