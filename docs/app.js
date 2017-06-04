@@ -370,7 +370,9 @@ function update () {
     })
     .style("stroke-WIDTH", "1px")
     .attr("height", function (d) { return d.height; })
-    .attr("width", biHiSankey.nodeWidth());
+    .attr("width", biHiSankey.nodeWidth())
+    .attr("rx", function(d) { return d.type ? 5 : 0 })
+    .attr("rx", function(d) { return d.type ? 5 : 0 });
 
   node.on("mouseenter", function (g) {
     if (!isTransitioning) {
