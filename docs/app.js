@@ -516,9 +516,11 @@ function onlyUnique(value, index, self) {
 }
 
 // load TSV example
-var tsvData, columns, nodes, links;
+var dataflow, tsvData, columns, nodes, links;
 
-tsvData = document.getElementById('dataflow').text.trim().split("\n");
+dataflow = document.getElementById('dataflow');
+
+tsvData = dataflow.text.trim().split("\n");
 columns = tsvData.map(function(line) {
 	return line.trim().split("\t");
 });
@@ -606,3 +608,10 @@ biHiSankey
 disableUserInterractions(2 * TRANSITION_DURATION);
 
 update();
+
+// set subtitle
+var subtitle = dataflow.getAttribute('data-name');
+
+if (subtitle) {
+	document.getElementById('subtitle').innerHTML = subtitle;
+}
