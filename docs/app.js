@@ -10,18 +10,18 @@ var OPACITY = {
     LINK_FADED: 0.05,
     LINK_HIGHLIGHT: 0.9
   },
-  TYPES = ["mysql", "sphinx"],
-  TYPE_COLORS = ["#1b9e77", "#d95f02", "#7570b3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"],
+  TYPES = ["mysql", "sphinx", ""],
+  TYPE_COLORS = ["#1b9e77", "#d95f02", "#a5a0e3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"],
   TYPE_HIGHLIGHT_COLORS = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494"],
   LINK_COLOR = "#b3b3b3",
   INFLOW_COLOR = "#2E86D1",
   OUTFLOW_COLOR = "#D63028",
-  NODE_WIDTH = 36,
+  NODE_WIDTH = 52,
   COLLAPSER = {
     RADIUS: NODE_WIDTH / 2,
     SPACING: 2
   },
-  OUTER_MARGIN = 10,
+  OUTER_MARGIN = 30,
   MARGIN = {
     TOP: 2 * (COLLAPSER.RADIUS + OUTER_MARGIN),
     RIGHT: OUTER_MARGIN,
@@ -29,8 +29,8 @@ var OPACITY = {
     LEFT: OUTER_MARGIN
   },
   TRANSITION_DURATION = 400,
-  HEIGHT = 500 - MARGIN.TOP - MARGIN.BOTTOM,
-  WIDTH = 960 - MARGIN.LEFT - MARGIN.RIGHT,
+  HEIGHT = document.body.clientHeight - MARGIN.TOP - MARGIN.BOTTOM,
+  WIDTH = document.body.clientWidth - MARGIN.LEFT - MARGIN.RIGHT,
   LAYOUT_INTERATIONS = 32,
   REFRESH_INTERVAL = 7000;
 
@@ -504,14 +504,69 @@ function update () {
 
 }
 
+// @see https://stackoverflow.com/a/14438954
+function onlyUnique(value, index, self) {
+    return self.indexOf(value) === index;
+}
+
+// load TSV example
+var tsvData, columns, nodes, links;
+
+tsvData = document.getElementById('dataflow').text.trim().split("\n");
+columns = tsvData.map(function(line) {
+	return line.trim().split("\t");
+});
+
+// nodes are in columns 1st and 3rd
+nodes = columns.
+	map(function(line) {return line[0]}).
+	concat(
+		columns.map(function(line) {return line[2];})
+	).
+	filter(onlyUnique);
+
+// prepare nodes and links for biHiSankey library
+var exampleNodes = nodes.map(function(node, iter) {
+	var type = '',
+		pos = node.indexOf(':');
+
+	if (pos > -1) {
+		type = node.substring(0, pos);
+		// node = node.substring(pos+1);
+	}
+
+	return {
+		type: type,
+		id: iter,
+		name: node
+	};
+});
+
+var exampleLinks = columns.map(function(line) {
+	var weight = line[3] && parseFloat(line[3]) || 1;
+
+	return {
+		source: nodes.indexOf(line[0]),
+		target: nodes.indexOf(line[2]),
+		value: weight,
+		name: line[1]
+	};
+});
+
+/**
 var exampleNodes = [
   {"type":"mysql","id":1,"name":"Liabilities"},
-  {"type":"sphinx","id":2,"name":"Expenses"}
+  {"type":"sphinx","id":2,"name":"Expenses"},
+  {"type": "", "id":3,"name":"Foo\\Name"},
 ]
 
 var exampleLinks = [
   {"source":1, "target":2, "value": 1, "name": "pushData"},
+  {"source":3, "target":2, "value": 0.03, "name": "pushData"},
 ]
+**/
+
+console.log(exampleNodes, exampleLinks);
 
 biHiSankey
   .nodes(exampleNodes)
