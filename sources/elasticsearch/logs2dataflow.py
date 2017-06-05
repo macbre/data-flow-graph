@@ -31,7 +31,18 @@ def format_index_name(ts, prefix='syslog-ng_'):
 	return "{prefix}{date}".format(prefix=prefix, date=datetime.fromtimestamp(ts, tz=tz_info).strftime('%Y-%m-%d'))
 
 
-def get_log_messages(now, limit=10000):
+def es_get_timestamp_filer(since=None):
+	# @see https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-range-query.html
+        return {
+            "range": {
+                "@timestamp": {
+                    "gt": since,
+                }
+            }
+        } if since is not None else {}
+
+
+def get_log_messages(now, limit=10000, batch=5000):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
@@ -49,21 +60,43 @@ def get_log_messages(now, limit=10000):
 				"query": query,
 			}
 		},
-		"size": limit
+		"size": batch
 	}
 
-	logger.info('Querying for "{}" (limit set to {})'.format(query, limit))
+	logger.info('Querying for "{}" (limit set to {}, will query in batches of {} items)'.format(query, limit, batch))
 
-	res = es.search(index=format_index_name(yesterday), body=body)
-	logger.info('Got {} results'.format(res['hits']['total']))
+	items = 0
+	since = None
 
-	hits = [hit['_source'] for hit in res['hits']['hits']]
-	return hits
+	while limit is None or items < limit:
+		body["filter"] = es_get_timestamp_filer(since)
+		res = es.search(index=format_index_name(yesterday), body=body)
+
+		# logger.info('search: {}'.format(body))
+		# logger.info('got {} results'.format(res['hits']['total']))
+
+		cnt = len(res['hits']['hits'])
+		# logger.info('Got {} results'.format(cnt))
+
+		if cnt == 0:
+			logger.info('No more results, returned {} results so far'.format(items))
+			return
+
+		# yield results one by one
+		for hit in res['hits']['hits']:
+			items += 1
+			since = hit['_source']['@timestamp']
+
+			yield hit['_source']
+
+		# logger.info('Next time will query for logs since {}'.format(since))
+
+	logger.info('Limit of {} results reached, returned {} results so far'.format(limit, items))
 
 
 def get_query_metadata(query):
 	# @see https://pypi.python.org/pypi/sqlparse
-	res = sqlparse.parse(query)
+	res = None #  sqlparse.parse(query)
 	if res:
 		statement = res[0]
 		sql_type = statement.get_type()  # SELECT, UPDATE, UNKNOWN
@@ -90,6 +123,7 @@ def extract_metadata(message):
 		return None
 
 	(kind, table) = meta
+	table = table[0]  # TODO: handle more tables
 
 	# sphinx or mysql?
 	db = message.get('@fields').get('database').get('name')
@@ -148,14 +182,17 @@ def unique(iterable):
 	return map(format_item, iterable)
 
 # take SQL logs from elasticsearch
-messages = get_log_messages(now=int(time.time()), limit=100)  # beware of "Out of heap space"
+messages = get_log_messages(now=int(time.time()), limit=None)  # None - return ALL matching messages
 
-logger.info('Generating metadata for {} entries...'.format(len(messages)))
+logger.info('Generating metadata...')
 meta = map(extract_metadata, messages)
 meta = filter(lambda item: item is not None, meta)
 
-logger.info('Building dataflow entries...')
-graph = unique(map(build_flow_entry, meta))
+logger.info('Building dataflow entries for {} queries...'.format(len(meta)))
+entries = map(build_flow_entry, meta)
 
-logger.info('Done')
+logger.info('Building TSV file with nodes and edges from {} entries...'.format(len(entries)))
+graph = unique(entries)
+
+logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
 print("\n".join(set(graph)))
