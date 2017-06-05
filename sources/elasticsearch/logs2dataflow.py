@@ -103,23 +103,43 @@ def get_query_metadata(query):
 		tables = filter(lambda token: isinstance(token, sqlparse.sql.Identifier), statement.tokens)
 		tables = map(str, tables)
 
-		print(query[:90], tables)
+		print(query[:90], sql_type, tables)
 
 		if sql_type != 'UNKNOWN':
 			return sql_type, tables  # SELECT, (products, )
 
 	kind = query.split(' ')[0]
-	matches = re.search(r'(FROM|INTO|UPDATE) (\w+)', query)
-	return (kind, (matches.group(2),)) if matches and matches.group(2) is not None else None
+
+	try:
+		# SELECT FROM, INSERT INTO
+		matches = re.search(r'(FROM|INTO) (\w+)', query)
+		return (kind, (matches.group(2),))
+	except:
+		pass
+
+	try:
+		# UPDATE foo SET ...
+		matches = re.search(r'(\w+) SET', query) if 'UPDATE' in query else None
+		return (kind, (matches.group(1),))
+	except:
+		pass
+
+	try:
+		# DESCRIBE foo
+		matches = re.search(r'DESCRIBE (\w+)', query)
+		return (kind, (matches.group(1),))
+	except:
+		pass
+
+	return None
 
 
 def extract_metadata(message):
 	query = re.sub(r'^SQL ', '', message.get('@message'))
 	meta = get_query_metadata(query)
 
-	# print('extract_metadata', query[:90], meta);
-
 	if meta is None:
+		# logger.info('extract_metadata failed: {} - {}'.format(query[:120].encode('utf8'), meta));
 		return None
 
 	(kind, table) = meta
@@ -192,7 +212,7 @@ logger.info('Building dataflow entries for {} queries...'.format(len(meta)))
 entries = map(build_flow_entry, meta)
 
 logger.info('Building TSV file with nodes and edges from {} entries...'.format(len(entries)))
-graph = unique(entries)
+graph = sorted(unique(entries))
 
 logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
 print("\n".join(set(graph)))
