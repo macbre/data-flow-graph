@@ -263,12 +263,15 @@ function update () {
            return link.id == d.id;
         });
 
-	var label = meta.name + "\n";
+	var label = meta.name;
+	if (meta.metadata) {
+		label += "\n" + meta.metadata;
+	}
 
         if (d.direction > 0) {
-          return label + d.source.name + " \u21D2 " + d.target.name;
+          return label + "\n" + d.source.name + " \u21D2 " + d.target.name;
         }
-        return label + d.target.name + " \u21D0 " + d.source.name;
+        return label + "\n" + d.target.name + " \u21D0 " + d.source.name;
       });
 
       d3.select(this)
@@ -582,7 +585,8 @@ var exampleLinks = columns.map(function(line) {
 		source: nodes.indexOf(line[0]),
 		target: nodes.indexOf(line[2]),
 		value: weight,
-		name: line[1]
+		name: line[1],
+		metadata: line[4] || ''
 	};
 });
 
