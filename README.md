@@ -1,5 +1,5 @@
 # database-flow-graph
-Takes SQL logs and visualizes how your data flow through the database.
+Takes SQL logs and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**. This can even be extended to handle messages queues pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...).
 
 # [Live demo](https://macbre.github.io/database-flow-graph/)
 
@@ -35,6 +35,12 @@ ImageBot        fetchImage      mysql:products  0.0009
 ```
 
 > Node names can by categorized by adding a `label` followed by `:`, e.g. `mysql:table`
+
+## Generating TSV file for data flow
+
+You can write your own tool to analyze logs. It just needs to emit TSV file that matches the above format. 
+
+[`sources/elasticsearch/logs2dataflow.py`](https://github.com/macbre/database-flow-graph/blob/master/sources/elasticsearch/logs2dataflow.py) is here as an example - it was used to generate TSV for a [demo](https://macbre.github.io/database-flow-graph/) of this tool. 24 hours of logs from [elecena.pl](https://elecena.pl/ ) were analyzed (1mm+ of SQL queries).
 
 ## Links
 
