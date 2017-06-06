@@ -42,14 +42,27 @@ def es_get_timestamp_filer(since=None):
         } if since is not None else {}
 
 
-def get_log_messages(now, limit=10000, batch=5000):
+def format_timestamp(ts):
+        """
+        Format the UTC timestamp for Elasticsearch
+        eg. 2014-07-09T08:37:18.000Z
+        @see https://docs.python.org/2/library/time.html#time.strftime
+        """
+        tz_info = tz.tzutc()
+        return datetime.fromtimestamp(ts, tz=tz_info).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
+def get_log_messages(now, limit=10000, batch=10000):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
 	es = Elasticsearch(host='127.0.0.1', port=59200, timeout=120)
 
-	# take logs from the last day
-	yesterday = now - 86400
+	# take logs from the last day and today (last 24h)
+	indices = ','.join([
+		format_index_name(now - 86400),
+		format_index_name(now)
+	])
 
 	# search
 	# Got 850791 results
@@ -60,17 +73,18 @@ def get_log_messages(now, limit=10000, batch=5000):
 				"query": query,
 			}
 		},
-		"size": batch
+		"size": batch,
+		"sort": { "@timestamp": { "order": "asc" }}
 	}
 
-	logger.info('Querying for "{}" (limit set to {}, will query in batches of {} items)'.format(query, limit, batch))
-
 	items = 0
-	since = None
+	since = format_timestamp(now-86400)
+
+	logger.info('Querying for "{}" since {} (limit set to {}, will query in batches of {} items)'.format(query, since, limit, batch))
 
 	while limit is None or items < limit:
 		body["filter"] = es_get_timestamp_filer(since)
-		res = es.search(index=format_index_name(yesterday), body=body)
+		res = es.search(index=indices, body=body)
 
 		# logger.info('search: {}'.format(body))
 		# logger.info('got {} results'.format(res['hits']['total']))
@@ -89,7 +103,7 @@ def get_log_messages(now, limit=10000, batch=5000):
 
 			yield hit['_source']
 
-		# logger.info('Next time will query for logs since {}'.format(since))
+		logger.info('Next time will query for logs since {}'.format(since))
 
 	logger.info('Limit of {} results reached, returned {} results so far'.format(limit, items))
 
@@ -215,4 +229,6 @@ logger.info('Building TSV file with nodes and edges from {} entries...'.format(l
 graph = sorted(unique(entries))
 
 logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
+
+print('# Log entries analized: {}'.format(len(meta)))
 print("\n".join(set(graph)))
