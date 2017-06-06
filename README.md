@@ -1,5 +1,7 @@
 # database-flow-graph
-Takes SQL logs and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**. This can even be extended to **handle message queues pops and pushes** (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...).
+Takes SQL logs and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**.
+
+This can be extended to handle message queues pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...), HTTP services communication (GET, POST requests), Amazon's S3 storage operations...
 
 # [Live demo](https://macbre.github.io/database-flow-graph/)
 
