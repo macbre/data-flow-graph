@@ -1,5 +1,5 @@
 # database-flow-graph
-Takes SQL logs and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**. This can even be extended to handle messages queues pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...).
+Takes SQL logs and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**. This can even be extended to **handle message queues pops and pushes** (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...).
 
 # [Live demo](https://macbre.github.io/database-flow-graph/)
 
@@ -8,33 +8,26 @@ Takes SQL logs and **visualizes how your data flow through the database** allowi
 Visualization is generated for a TSV file with the following format:
 
 ```
-(source node)\t(edge label)\t(target node)\t(edge weight - optional)
+(source node)\t(edge label)\t(target node)\t(edge weight - optional)\t(optional metadata displayed in edge on-hover tooltip)
 ```
 
 ### Example
 
 ```tsv
-sphinx:products getSnippet      Elecena\Services\Sphinx 0.0127
-mysql:products  _select mq/request.php  0.0313
-sphinx:products getKeywords     Elecena\Services\Sphinx 0.0323
-sphinx:products getProductsForTags      Elecena\Services\Sphinx 0.0166
-mysql:products  getLastChanges  StatsController 0.0003
-currency.php    _       mysql:products  0.0000
-sphinx:products products        Elecena\Services\Search 0.0126
-mysql:products  getImagesToFetch        ImageBot        0.0008
-mysql:products  _describe       mq/request.php  0.0007
-sphinx:products getIndexCount   Elecena\Services\Sphinx 0.0000
-mq/request.php  _update mysql:products  1.0000
-ShopsUpdateScript       run     mysql:products  0.0019
-mq/request.php  _insert mysql:products  0.0014
-mysql:products  run     ShopsUpdateScript       0.0055
-sphinx:products rebuildStats    StatsController 0.0004
-mysql:products  newFromIds      Elecena\Models\Product  0.0483
-sphinx:products getLastChanges  StatsController 0.0003
-ImageBot        fetchImage      mysql:products  0.0009
+mq/request.php	_update	mysql:shops	0.0148	QPS: 0.1023
+sphinx:datasheets	search	Elecena\Services\Sphinx	0.1888	QPS: 1.3053
+mysql:products	getImagesToFetch	ImageBot	0.0007	QPS: 0.0050
+sphinx:products	search	Elecena\Services\Sphinx	0.0042	QPS: 0.0291
+sphinx:products	getIndexCount	Elecena\Services\Sphinx	0.0001	QPS: 0.0007
+sphinx:products	products	Elecena\Services\Search	0.0323	QPS: 0.2235
+currency.php	_	mysql:currencies	0.0001	QPS: 0.0008
+sphinx:products	getLastChanges	StatsController	0.0002	QPS: 0.0014
+mysql:suggest	getSuggestions	Elecena\Services\Sphinx	0.0026	QPS: 0.0181
+mq/request.php	_delete	mysql:shops_stats	0.0004	QPS: 0.0030
+sphinx:parameters	getDatabaseCount	Parameters	0.0002	QPS: 0.0010
 ```
 
-> Node names can by categorized by adding a `label` followed by `:`, e.g. `mysql:table`
+> Node names can by categorized by adding a `label` followed by `:` (e.g. `mysql:foo`, `sphinx:index`, `solr:products`, `redis:queue`)
 
 ## Generating TSV file for data flow
 
