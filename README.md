@@ -3,6 +3,8 @@ Takes SQL logs and **visualizes how your data flow through the database** allowi
 
 This can be extended to handle message queues pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...), HTTP services communication (GET, POST requests), Amazon's S3 storage operations...
 
+`database-flow-graph` uses [d3.js](https://d3js.org/) library to visualize the data flow (heavily inspired by [this demo](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779) by Neil Atkinson).
+
 # [Live demo](https://macbre.github.io/database-flow-graph/)
 
 ## `dataflow.tsv`
