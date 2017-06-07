@@ -197,7 +197,7 @@ def build_flow_entry(meta):
 		target=cls if reads else table
 	)
 
-def unique(iterable):
+def unique(fn, iterable):
 	# for stats and weighting entries
 	c = collections.Counter(iterable)
 	max_value = c.most_common(1)[0][1]
@@ -209,12 +209,11 @@ def unique(iterable):
 		if weight < 0.0001:
 			weight = 0.0001
 
-		# add as edge metadata
-		qps = 1. * cnt / 86400
+		metadata = fn(item, cnt) if fn else ''
 
-		return item + "\t{:.4f}\tQPS: {:.4f}".format(weight, qps)
+		return item + "\t{:.4f}\t{}".format(weight, metadata).rstrip()
 
-	return map(format_item, iterable)
+	return sorted(map(format_item, iterable))
 
 # take SQL logs from elasticsearch
 sql_logs = get_log_messages(query='@message: /SQL.*/', limit=None)  # None - return ALL matching messages
@@ -227,7 +226,10 @@ logger.info('Building dataflow entries for {} queries...'.format(len(meta)))
 entries = map(build_flow_entry, meta)
 
 logger.info('Building TSV file with nodes and edges from {} entries...'.format(len(entries)))
-graph = sorted(unique(entries))
+graph = unique(
+	lambda entry, cnt: 'QPS: {:.4f}'.format(1. * cnt / 86400),  # calculate QPS
+	entries
+)
 
 logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
 
