@@ -52,21 +52,22 @@ def format_timestamp(ts):
         return datetime.fromtimestamp(ts, tz=tz_info).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
-def get_log_messages(now, limit=10000, batch=10000):
+def get_log_messages(query, now=None, limit=10000, batch=10000):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
 	es = Elasticsearch(host='127.0.0.1', port=59200, timeout=120)
 
 	# take logs from the last day and today (last 24h)
+	if now is None:
+		now = int(time.time())
+
 	indices = ','.join([
 		format_index_name(now - 86400),
 		format_index_name(now)
 	])
 
 	# search
-	# Got 850791 results
-	query = '@message: /SQL.*/'
 	body = {
 		"query": {
 			"query_string": {
@@ -216,10 +217,10 @@ def unique(iterable):
 	return map(format_item, iterable)
 
 # take SQL logs from elasticsearch
-messages = get_log_messages(now=int(time.time()), limit=None)  # None - return ALL matching messages
+sql_logs = get_log_messages(query='@message: /SQL.*/', limit=None)  # None - return ALL matching messages
 
 logger.info('Generating metadata...')
-meta = map(extract_metadata, messages)
+meta = map(extract_metadata, sql_logs)
 meta = filter(lambda item: item is not None, meta)
 
 logger.info('Building dataflow entries for {} queries...'.format(len(meta)))
@@ -232,3 +233,5 @@ logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
 
 print('# Log entries analized: {}'.format(len(meta)))
 print("\n".join(set(graph)))
+
+# TODO: prepare flow data for redis and s3 operations
