@@ -91,8 +91,8 @@ biHiSankey = d3.biHiSankey();
 // Set the biHiSankey diagram properties
 biHiSankey
   .nodeWidth(NODE_WIDTH)
-  .nodeSpacing(32)
-  .linkSpacing(5)
+  .nodeSpacing(25)
+  .linkSpacing(2)
   .arrowheadScaleFactor(0.25) // Specifies that 0.5 of the link's stroke WIDTH should be allowed for the marker at the end of the link.
   .size([WIDTH, HEIGHT]);
 
@@ -534,9 +534,6 @@ columns = tsvData.
 
 // nodes are in columns 1st and 3rd
 nodes = columns.
-	sort(function(a, b) {
-		return b[3] - a[3];
-	}).
 	map(function(line) {return line[0]}).
 	concat(
 		columns.map(function(line) {return line[2];})
@@ -544,7 +541,7 @@ nodes = columns.
 	filter(onlyUnique)
 
 // sort nodes alphabetically? (DB on the left, code on the right)
-//nodes = nodes.sort();
+nodes = nodes.sort();
 
 // sort, but ignoring the label prefix
 /**
@@ -580,10 +577,10 @@ var exampleNodes = nodes.map(function(node, iter) {
 var exampleLinks = columns.map(function(line) {
 	var weight = line[3] && parseFloat(line[3]) || 1;
 
-	weight = Math.max(weight, 0.001);
+	//weight = Math.max(weight, 0.0001);
 
 	// scale using log10
-	weight = Math.log10(weight * 10000) / 10;
+	//weight = Math.log10(weight * 10000) / 10;
 
 	return {
 		source: nodes.indexOf(line[0]),
