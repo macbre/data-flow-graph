@@ -524,9 +524,13 @@ var dataflow, tsvData, columns, nodes, links;
 dataflow = document.getElementById('dataflow');
 
 tsvData = dataflow.text.trim().split("\n");
-columns = tsvData.map(function(line) {
-	return line.trim().split("\t");
-});
+columns = tsvData.
+	filter(function(line) {
+		return line.indexOf("#") !== 0;
+	}).
+	map(function(line) {
+		return line.trim().split("\t");
+	});
 
 // nodes are in columns 1st and 3rd
 nodes = columns.
