@@ -38,7 +38,7 @@ sphinx:parameters	getDatabaseCount	Parameters	0.0002	QPS: 0.0010
 
 You can write your own tool to analyze logs. It just needs to emit TSV file that matches the above format. 
 
-[`sources/elasticsearch/logs2dataflow.py`](https://github.com/macbre/data-flow-graph/blob/master/sources/elasticsearch/logs2dataflow.py) is here as an example - it was used to generate TSV for a [demo](https://macbre.github.io/database-flow-graph/) of this tool. 24 hours of logs from [elecena.pl](https://elecena.pl/ ) were analyzed (1mm+ of SQL queries).
+[`sources/elasticsearch/logs2dataflow.py`](https://github.com/macbre/data-flow-graph/blob/master/sources/elasticsearch/logs2dataflow.py) is here as an example - it was used to generate TSV for a [demo](https://macbre.github.io/data-flow-graph/) of this tool. 24 hours of logs from [elecena.pl](https://elecena.pl/ ) were analyzed (1mm+ of SQL queries).
 
 ## Links
 
