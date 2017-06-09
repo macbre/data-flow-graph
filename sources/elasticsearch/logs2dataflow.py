@@ -236,8 +236,8 @@ logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
 print('# SQL log entries analyzed: {}'.format(len(meta)))
 print("\n".join(set(graph)))
 
-# prepare flow data for redis and s3 operations
-logger.info("Building dataflow entries for {} redis pushes...")
+# prepare flow data for redis operations
+logger.info("Building dataflow entries for redis pushes...")
 pushes = map(
 	lambda entry: '{source}\t{edge}\t{target}'.format(
 		source='bots:{}'.format(entry.get('@source_host').split('.')[0]), edge='push', target='redis:products'),
@@ -258,3 +258,18 @@ graph = unique(
 print('# Redis log entries')
 print("\n".join(set(graph)))
 
+# prepare flow data for s3 operations
+logger.info("Building dataflow entries for s3 operations...")
+s3_uploads = map(
+	lambda entry: '{source}\t{edge}\t{target}'.format(
+		source='ImageBot', edge='upload', target='s3:s.elecena.pl'),
+	get_log_messages(query='program: "nano.ImageBot" AND @message: "Image stored"',limit=None)
+)
+
+graph = unique(
+	lambda entry, cnt: '{:.1f} requests/hour'.format(1. * cnt / 24),
+	s3_uploads
+)
+
+print('# s3 operations')
+print("\n".join(set(graph)))
