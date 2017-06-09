@@ -1,11 +1,11 @@
-# database-flow-graph
+# data-flow-graph
 Takes application logs from Elasticsearch and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**.
 
-This can be extended to handle message queues pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...), HTTP services communication (GET, POST requests), Amazon's S3 storage operations...
+This can be extended to handle **message queues** pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...), **HTTP services communication** (GET, POST requests), **Amazon's S3 storage operations**...
 
-`database-flow-graph` uses [d3.js](https://d3js.org/) library to visualize the data flow (heavily inspired by [this demo](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779) by Neil Atkinson).
+`data-flow-graph` uses [d3.js](https://d3js.org/) library to visualize the data flow (heavily inspired by [this demo](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779) by Neil Atkinson).
 
-# [Live demo](https://macbre.github.io/database-flow-graph/)
+# [Live demo](https://macbre.github.io/data-flow-graph/)
 
 ## `dataflow.tsv`
 
@@ -18,6 +18,7 @@ Visualization is generated for a TSV file with the following format:
 ### Example
 
 ```tsv
+# a comment - will be ignored by the visualization layer
 mq/request.php	_update	mysql:shops	0.0148	QPS: 0.1023
 sphinx:datasheets	search	Elecena\Services\Sphinx	0.1888	QPS: 1.3053
 mysql:products	getImagesToFetch	ImageBot	0.0007	QPS: 0.0050
@@ -37,7 +38,7 @@ sphinx:parameters	getDatabaseCount	Parameters	0.0002	QPS: 0.0010
 
 You can write your own tool to analyze logs. It just needs to emit TSV file that matches the above format. 
 
-[`sources/elasticsearch/logs2dataflow.py`](https://github.com/macbre/database-flow-graph/blob/master/sources/elasticsearch/logs2dataflow.py) is here as an example - it was used to generate TSV for a [demo](https://macbre.github.io/database-flow-graph/) of this tool. 24 hours of logs from [elecena.pl](https://elecena.pl/ ) were analyzed (1mm+ of SQL queries).
+[`sources/elasticsearch/logs2dataflow.py`](https://github.com/macbre/data-flow-graph/blob/master/sources/elasticsearch/logs2dataflow.py) is here as an example - it was used to generate TSV for a [demo](https://macbre.github.io/database-flow-graph/) of this tool. 24 hours of logs from [elecena.pl](https://elecena.pl/ ) were analyzed (1mm+ of SQL queries).
 
 ## Links
 
