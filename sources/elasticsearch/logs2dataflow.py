@@ -233,7 +233,28 @@ graph = unique(
 
 logger.info('Printing out TSV file with {} edges...'.format(len(graph)))
 
-print('# Log entries analized: {}'.format(len(meta)))
+print('# SQL log entries analyzed: {}'.format(len(meta)))
 print("\n".join(set(graph)))
 
-# TODO: prepare flow data for redis and s3 operations
+# prepare flow data for redis and s3 operations
+logger.info("Building dataflow entries for {} redis pushes...")
+pushes = map(
+	lambda entry: '{source}\t{edge}\t{target}'.format(
+		source='bots:{}'.format(entry.get('@source_host').split('.')[0]), edge='push', target='redis:products'),
+	get_log_messages(query='program: "elecena.bots" AND @message: "bot::send"',limit=None)
+)
+
+pops = map(
+	lambda entry: '{source}\t{edge}\t{target}'.format(
+		target='mq/request.php', edge='pop', source='redis:products'),
+	get_log_messages(query='program: "uportal.bots-worker" AND @message: "Message taken from the queue"',limit=None)
+)
+
+graph = unique(
+	lambda entry, cnt: '{:.1f} messages/hour'.format(1. * cnt / 24),
+	pops + pushes
+)
+
+print('# Redis log entries')
+print("\n".join(set(graph)))
+
