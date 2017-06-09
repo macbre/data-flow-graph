@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>database-flow-graph | Example</title>
+    <title>data-flow-graph | Example</title>
     <link href="style.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Monda&amp;subset=latin-ext" rel="stylesheet">
   </head>
   <body>
-    <h1>database-flow-graph</h1>
+    <h1>data-flow-graph</h1>
     <h2 id="subtitle"></h2>
 
-    <cite><a href="https://github.com/macbre/database-flow-graph">github.com/macbre/database-flow-graph</a></cite>
+    <cite><a href="https://github.com/macbre/data-flow-graph">github.com/macbre/data-flow-graph</a></cite>
 
     <div id="chart"></div>
 
-    <script type="data/tsv" id="dataflow" data-name="elecena.pl queries">
+    <script type="data/tsv" id="dataflow" data-name="elecena.pl">
 # Log entries analized: 1227179
 mysql:shops	_select	mq/request.php	0.0166	QPS: 0.1205
 mysql:products	run	ShopsUpdateScript	0.0065	QPS: 0.0476
@@ -71,6 +71,8 @@ bots:docker-bjornoya	push	redis:products	0.3988	166.8 messages/hour
 redis:products	pop	mq/request.php	1.0000	418.1 messages/hour
 bots:docker-monty	push	redis:products	0.1857	77.7 messages/hour
 bots:s0	push	redis:products	0.3874	162.0 messages/hour
+# s3 operations
+ImageBot	upload	s3:s.elecena.pl	1.0000	522.1 requests/hour
     </script>
 
     <script src="https://d3js.org/d3.v3.min.js"></script>
