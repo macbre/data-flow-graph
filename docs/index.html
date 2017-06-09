@@ -66,6 +66,11 @@ sphinx:products	products	Elecena\Services\Search	0.0762	QPS: 0.5547
 mysql:shops	checkBotsQueue	Elecena\ElecenaHealthcheck	0.0044	QPS: 0.0321
 sphinx:products	rebuildStats	StatsController	0.0003	QPS: 0.0025
 mysql:products	getIdsBatch	ProductController	0.0147	QPS: 0.1073
+# Redis log entries
+bots:docker-bjornoya	push	redis:products	0.3988	166.8 messages/hour
+redis:products	pop	mq/request.php	1.0000	418.1 messages/hour
+bots:docker-monty	push	redis:products	0.1857	77.7 messages/hour
+bots:s0	push	redis:products	0.3874	162.0 messages/hour
     </script>
 
     <script src="https://d3js.org/d3.v3.min.js"></script>
