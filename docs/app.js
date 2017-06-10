@@ -31,7 +31,7 @@ var OPACITY = {
   TRANSITION_DURATION = 400,
   HEIGHT = document.body.clientHeight - MARGIN.TOP - MARGIN.BOTTOM - 20,
   WIDTH = document.body.clientWidth - MARGIN.LEFT - MARGIN.RIGHT - 120,
-  LAYOUT_INTERATIONS = 32,
+  LAYOUT_INTERATIONS = 20,
   REFRESH_INTERVAL = 7000;
 
 var formatNumber = function (d) {
@@ -577,10 +577,12 @@ var exampleNodes = nodes.map(function(node, iter) {
 var exampleLinks = columns.map(function(line) {
 	var weight = line[3] && parseFloat(line[3]) || 1;
 
-	//weight = Math.max(weight, 0.0001);
+	weight = Math.max(weight, 0.0001);
 
 	// scale using log10
-	//weight = Math.log10(weight * 10000) / 10;
+	weight = Math.log10(weight * 50000) / 50;
+
+	weight = Math.min(1, Math.max(0, weight))
 
 	return {
 		source: nodes.indexOf(line[0]),
@@ -608,6 +610,9 @@ console.log(exampleNodes, exampleLinks);
 
 // @se https://github.com/Neilos/bihisankey
 biHiSankey
+  .nodeSpacing(NODE_WIDTH / 2) // sets the minimum vertical pixel spacing between nodes
+  .nodeWidth(NODE_WIDTH) // sets the pixel width of all nodes (heights are variable, widths are fixed)
+  .linkSpacing(NODE_WIDTH / 8) // sets the vertical pixel spacing between links
   .nodes(exampleNodes)
   .links(exampleLinks)
   .initializeNodes(function (node) {
