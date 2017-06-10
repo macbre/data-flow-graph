@@ -11,8 +11,8 @@ var OPACITY = {
     LINK_HIGHLIGHT: 0.9
   },
   TYPES = [],
-  TYPE_COLORS = ["#1b9e77", "#d95f02", "#a5a0e3", "#e7298a", "#66a61e", "#e6ab02", "#a6761d"],
-  TYPE_HIGHLIGHT_COLORS = ["#66c2a5", "#fc8d62", "#8da0cb", "#e78ac3", "#a6d854", "#ffd92f", "#e5c494"],
+  TYPE_COLORS = ["#1b9e77", "#d95f02", "#a5a0e3", "#66a61e", "#a6761d"],
+  TYPE_HIGHLIGHT_COLORS = ["#66c2a5", "#fc8d62", "#8da0cb", "#a6d854", "#e5c494"],
   LINK_COLOR = "#666",
   INFLOW_COLOR = "#2E86D1",
   OUTFLOW_COLOR = "#D63028",
