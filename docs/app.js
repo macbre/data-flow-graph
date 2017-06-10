@@ -610,9 +610,9 @@ console.log(exampleNodes, exampleLinks);
 
 // @se https://github.com/Neilos/bihisankey
 biHiSankey
-  .nodeSpacing(NODE_WIDTH / 2) // sets the minimum vertical pixel spacing between nodes
+  .nodeSpacing(NODE_WIDTH) // sets the minimum vertical pixel spacing between nodes
   .nodeWidth(NODE_WIDTH) // sets the pixel width of all nodes (heights are variable, widths are fixed)
-  .linkSpacing(NODE_WIDTH / 8) // sets the vertical pixel spacing between links
+  .linkSpacing(2) // sets the vertical pixel spacing between links
   .nodes(exampleNodes)
   .links(exampleLinks)
   .initializeNodes(function (node) {
