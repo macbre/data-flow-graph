@@ -52,7 +52,7 @@ def format_timestamp(ts):
         return datetime.fromtimestamp(ts, tz=tz_info).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
-def get_log_messages(query, extra=None, now=None, limit=10000, batch=10000):
+def get_log_messages(query, extra=None, now=None, limit=10000, batch=10000, return_raw=False):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
@@ -86,9 +86,13 @@ def get_log_messages(query, extra=None, now=None, limit=10000, batch=10000):
 
 	logger.info('Querying for "{}" since {} (limit set to {}, will query in batches of {} items)'.format(query, since, limit, batch))
 
-	while limit is None or items < limit:
+	while limit is None or items <= limit:
 		body["filter"] = es_get_timestamp_filer(since)
 		res = es.search(index=indices, body=body)
+
+		if return_raw is True:
+			yield  res
+			return
 
 		# logger.info('search: {}'.format(body))
 		# logger.info('got {} results'.format(res['hits']['total']))
@@ -110,6 +114,39 @@ def get_log_messages(query, extra=None, now=None, limit=10000, batch=10000):
 		logger.info('Next time will query for logs since {}'.format(since))
 
 	logger.info('Limit of {} results reached, returned {} results so far'.format(limit, items))
+
+
+def get_log_aggregate(query, group_by, stats_field):
+	# @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/search-aggregations.html
+	# @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/search-aggregations-metrics-stats-aggregation.html
+	# @see https://www.elastic.co/guide/en/elasticsearch/reference/2.0/search-aggregations-bucket-terms-aggregation.html
+	aggs = {
+		"aggregations": {
+			"group_by_agg": {
+				"terms": {
+					"field": group_by
+				},
+			},
+			"aggregations": {
+				"stats" : { "field" : stats_field }
+			}
+		}
+	}
+
+	res = get_log_messages(query, extra=aggs, limit=0, batch=0, return_raw=True)
+	res = list(res)[0]
+
+	aggs = res['aggregations']
+	# print(aggs)
+
+	# build stats
+	buckets = {}
+	for agg in aggs['group_by_agg']['buckets']:
+		buckets[agg['key']] = agg['doc_count']
+
+	stats = aggs['aggregations']
+
+	return buckets, stats
 
 
 def get_query_metadata(query):
@@ -259,6 +296,21 @@ graph = unique(
 )
 
 print('# Redis log entries')
+print("\n".join(set(graph)))
+
+# prepare HTTP traffic stats for bots
+logger.info("Building dataflow entries for bots HTTP traffic...")
+hosts_buckets, bytes_transfered  = get_log_aggregate(
+	query='program: "elecena.bots" AND @message: "bot::send_http_request" AND severity: "info"',
+	group_by='@source_host', stats_field='@context.stats.size_download'
+)
+
+graph = []
+for host, count in hosts_buckets.iteritems():
+	graph.append('{source}\t{edge}\t{target}\t{value:.4f}\t{metadata}'.format(
+		source='web:shops', edge='http fetch', target='bots:{}'.format(host), value=1.0, metadata='{:.4f} requests/hour'.format(1.)))
+
+print('# bots HTTP traffic')
 print("\n".join(set(graph)))
 
 # prepare flow data for s3 operations
