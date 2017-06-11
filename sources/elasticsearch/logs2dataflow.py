@@ -52,7 +52,7 @@ def format_timestamp(ts):
         return datetime.fromtimestamp(ts, tz=tz_info).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
-def get_log_messages(query, now=None, limit=10000, batch=10000):
+def get_log_messages(query, extra=None, now=None, limit=10000, batch=10000):
 	logger = logging.getLogger('get_log_messages')
 
 	# connect to es
@@ -77,6 +77,9 @@ def get_log_messages(query, now=None, limit=10000, batch=10000):
 		"size": batch,
 		"sort": { "@timestamp": { "order": "asc" }}
 	}
+
+	if extra is not None:
+		body.update(extra)
 
 	items = 0
 	since = format_timestamp(now-86400)
