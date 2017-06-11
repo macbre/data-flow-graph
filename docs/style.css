@@ -14,8 +14,8 @@ body {
 
   color: #eee;
 
-  background: #333; /* fallback for old browsers */
-  background: linear-gradient(to bottom, #222, #444); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #222; /* fallback for old browsers */
+  background: linear-gradient(to bottom, #111, #444); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 h1 {
