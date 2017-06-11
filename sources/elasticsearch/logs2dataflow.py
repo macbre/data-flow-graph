@@ -306,9 +306,14 @@ hosts_buckets, bytes_transfered  = get_log_aggregate(
 )
 
 graph = []
+max_count = max(hosts_buckets.values())
+bytes_per_req = 1. * bytes_transfered['sum'] / bytes_transfered['count']
+
 for host, count in hosts_buckets.iteritems():
 	graph.append('{source}\t{edge}\t{target}\t{value:.4f}\t{metadata}'.format(
-		source='web:shops', edge='http fetch', target='bots:{}'.format(host), value=1.0, metadata='{:.4f} requests/hour'.format(1.)))
+		source='web:shops', edge='http fetch', target='bots:{}'.format(host), value=1.0 * count / max_count,
+		metadata='{reqs:.0f} requests/hour, {gibs:.2f} GiB/hour'.format(reqs=1. * count / 24, gibs=bytes_per_req * count / 1024 / 1024 / 1024 / 24)
+	))
 
 print('# bots HTTP traffic')
 print("\n".join(set(graph)))
