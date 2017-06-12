@@ -1,7 +1,13 @@
 # data-flow-graph
 Takes application logs from Elasticsearch and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**.
 
-This can be extended to handle **message queues** pops and pushes (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe). ...), **HTTP services communication** (GET, POST requests), **Amazon's S3 storage operations**...
+This can be extended to handle:
+
+* message queues (Redis, RabbitMQ, [`Scribe`](https://github.com/facebookarchive/scribe), ...)
+* HTTP services communication (GET, POST requests)
+* Amazon's S3 storage operations
+* tcpdump / varnishlog traffic between the hosts
+* (*use your imagintation*)
 
 `data-flow-graph` uses [d3.js](https://d3js.org/) library to visualize the data flow (heavily inspired by [this demo](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779) by Neil Atkinson).
 
