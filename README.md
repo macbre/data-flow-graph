@@ -1,5 +1,5 @@
 # data-flow-graph
-Takes application logs from Elasticsearch and **visualizes how your data flow through the database** allowing you quickly to identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**.
+Takes application logs from Elasticsearch (because you do have logs, right?) and **visualizes how your data flow through the database** allowing you to quickly identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**.
 
 This can be extended to handle:
 
