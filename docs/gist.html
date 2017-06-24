@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>data-flow-graph | Example</title>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Monda&amp;subset=latin-ext" rel="stylesheet">
+  </head>
+  <body>
+    <h1>data-flow-graph</h1>
+    <h2 id="subtitle"></h2>
+
+    <cite><a href="https://github.com/macbre/data-flow-graph">github.com/macbre/data-flow-graph</a></cite>
+
+    <div id="chart"></div>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdn.rawgit.com/Neilos/bihisankey/master/bihisankey.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        function getTsvFromGist(res) {
+		console.log(res);
+
+		var file = Object.values(res.data.files)[0],
+			summary = res.data.description;
+
+		console.log(file);
+
+		console.log('Passing ' + file.filename + ' <' + file.raw_url + '> to visualization...');
+		visualize(file.content, summary);
+        }
+
+	var url = document.location.hash.replace(/^#/, ''); // e.g. ddf5742b8293062cc78b767fccb5197b
+
+	// prompt for URL, e.g. https://gist.github.com/macbre/ddf5742b8293062cc78b767fccb5197b
+	while (url === '') {
+		var gist = prompt('Please provide URL of Gist with dataflow TSV file');
+
+		// ok, we have a valid Gist URL, update the address bar
+		if (/gist.github.com/.test(gist)) {
+			url = gist.split('/').pop();
+			document.location.hash = '#' + url;
+		}
+	}
+
+	console.log('Rendering ' + url + ' Gist...');
+
+	// load Gist via GitHub API
+	var script = document.createElement('script');
+	script.src = 'https://api.github.com/gists/' + url + '?callback=getTsvFromGist';
+	document.body.appendChild(script);
+    </script>
+  </body>
+</html>
