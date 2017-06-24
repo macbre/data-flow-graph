@@ -519,114 +519,111 @@ function onlyUnique(value, index, self) {
 }
 
 // load TSV example
-var dataflow, tsvData, columns, nodes, links;
+function visualize(dataflow, subtitle) {
+	var tsvData, columns, nodes, links;
 
-dataflow = document.getElementById('dataflow');
+	tsvData = dataflow.trim().split("\n");
+	columns = tsvData.
+		filter(function(line) {
+			return line.indexOf("#") !== 0;
+		}).
+		map(function(line) {
+			return line.trim().split("\t");
+		});
 
-tsvData = dataflow.text.trim().split("\n");
-columns = tsvData.
-	filter(function(line) {
-		return line.indexOf("#") !== 0;
-	}).
-	map(function(line) {
-		return line.trim().split("\t");
+	// nodes are in columns 1st and 3rd
+	nodes = columns.
+		map(function(line) {return line[0]}).
+		concat(
+			columns.map(function(line) {return line[2];})
+		).
+		filter(onlyUnique)
+
+	// sort nodes alphabetically? (DB on the left, code on the right)
+	nodes = nodes.sort();
+
+	// sort, but ignoring the label prefix
+	/**
+	nodes = nodes.sort(function(a,b) {
+		return a.split(':').pop().toLowerCase() < b.split(':').pop().toLowerCase() ? -1 : 1;
+	});
+	**/
+
+	console.log(nodes);
+
+	// prepare nodes and links for biHiSankey library
+	var exampleNodes = nodes.map(function(node, iter) {
+		var type = '',
+			pos = node.indexOf(':');
+
+		if (pos > -1) {
+			type = node.substring(0, pos);
+			// node = node.substring(pos+1);
+		}
+
+		// push to TYPES
+		if (TYPES.indexOf(type) === -1) {
+			TYPES.push(type);
+		}
+
+		return {
+			type: type,
+			id: iter,
+			name: node
+		};
 	});
 
-// nodes are in columns 1st and 3rd
-nodes = columns.
-	map(function(line) {return line[0]}).
-	concat(
-		columns.map(function(line) {return line[2];})
-	).
-	filter(onlyUnique)
+	var exampleLinks = columns.map(function(line) {
+		var weight = line[3] && parseFloat(line[3]) || 1;
 
-// sort nodes alphabetically? (DB on the left, code on the right)
-nodes = nodes.sort();
+		weight = Math.max(weight, 0.0001);
 
-// sort, but ignoring the label prefix
-/**
-nodes = nodes.sort(function(a,b) {
-	return a.split(':').pop().toLowerCase() < b.split(':').pop().toLowerCase() ? -1 : 1;
-});
-**/
+		// scale using log10
+		weight = Math.log10(weight * 50000) / 50;
 
-console.log(nodes);
+		weight = Math.min(1, Math.max(0, weight))
 
-// prepare nodes and links for biHiSankey library
-var exampleNodes = nodes.map(function(node, iter) {
-	var type = '',
-		pos = node.indexOf(':');
+		return {
+			source: nodes.indexOf(line[0]),
+			target: nodes.indexOf(line[2]),
+			value: weight,
+			name: line[1],
+			metadata: line[4] || ''
+		};
+	});
 
-	if (pos > -1) {
-		type = node.substring(0, pos);
-		// node = node.substring(pos+1);
+	/**
+	var exampleNodes = [
+	  {"type":"mysql","id":1,"name":"Liabilities"},
+	  {"type":"sphinx","id":2,"name":"Expenses"},
+	  {"type": "", "id":3,"name":"Foo\\Name"},
+	]
+
+	var exampleLinks = [
+	  {"source":1, "target":2, "value": 1, "name": "pushData"},
+	  {"source":3, "target":2, "value": 0.03, "name": "pushData"},
+	]
+	**/
+
+	console.log(exampleNodes, exampleLinks);
+
+	// @se https://github.com/Neilos/bihisankey
+	biHiSankey
+	  .nodeSpacing(NODE_WIDTH) // sets the minimum vertical pixel spacing between nodes
+	  .nodeWidth(NODE_WIDTH) // sets the pixel width of all nodes (heights are variable, widths are fixed)
+	  .linkSpacing(2) // sets the vertical pixel spacing between links
+	  .nodes(exampleNodes)
+	  .links(exampleLinks)
+	  .initializeNodes(function (node) {
+	    node.state = node.parent ? "contained" : "collapsed";
+	  })
+	  .layout(LAYOUT_INTERATIONS);
+
+	disableUserInterractions(2 * TRANSITION_DURATION);
+
+	update();
+
+	if (typeof subtitle === 'string') {
+		document.getElementById('subtitle').innerHTML = subtitle;
 	}
-
-	// push to TYPES
-	if (TYPES.indexOf(type) === -1) {
-		TYPES.push(type);
-	}
-
-	return {
-		type: type,
-		id: iter,
-		name: node
-	};
-});
-
-var exampleLinks = columns.map(function(line) {
-	var weight = line[3] && parseFloat(line[3]) || 1;
-
-	weight = Math.max(weight, 0.0001);
-
-	// scale using log10
-	weight = Math.log10(weight * 50000) / 50;
-
-	weight = Math.min(1, Math.max(0, weight))
-
-	return {
-		source: nodes.indexOf(line[0]),
-		target: nodes.indexOf(line[2]),
-		value: weight,
-		name: line[1],
-		metadata: line[4] || ''
-	};
-});
-
-/**
-var exampleNodes = [
-  {"type":"mysql","id":1,"name":"Liabilities"},
-  {"type":"sphinx","id":2,"name":"Expenses"},
-  {"type": "", "id":3,"name":"Foo\\Name"},
-]
-
-var exampleLinks = [
-  {"source":1, "target":2, "value": 1, "name": "pushData"},
-  {"source":3, "target":2, "value": 0.03, "name": "pushData"},
-]
-**/
-
-console.log(exampleNodes, exampleLinks);
-
-// @se https://github.com/Neilos/bihisankey
-biHiSankey
-  .nodeSpacing(NODE_WIDTH) // sets the minimum vertical pixel spacing between nodes
-  .nodeWidth(NODE_WIDTH) // sets the pixel width of all nodes (heights are variable, widths are fixed)
-  .linkSpacing(2) // sets the vertical pixel spacing between links
-  .nodes(exampleNodes)
-  .links(exampleLinks)
-  .initializeNodes(function (node) {
-    node.state = node.parent ? "contained" : "collapsed";
-  })
-  .layout(LAYOUT_INTERATIONS);
-
-disableUserInterractions(2 * TRANSITION_DURATION);
-
-update();
-
-// set subtitle
-var subtitle = dataflow.getAttribute('data-name');
-
-if (subtitle) {
-	document.getElementById('subtitle').innerHTML = subtitle;
 }
