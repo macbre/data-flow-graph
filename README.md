@@ -11,6 +11,8 @@ This can be extended to handle:
 
 `data-flow-graph` uses [d3.js](https://d3js.org/) library to visualize the data flow (heavily inspired by [this demo](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779) by Neil Atkinson).
 
+> For easy dataflow sharing you can **[upload](https://gist.github.com/macbre/ddf5742b8293062cc78b767fccb5197b) graph data in TSV form to Gist** and [have it visualized](https://macbre.github.io/data-flow-graph/gist.html#ddf5742b8293062cc78b767fccb5197b).
+
 # [Live demo](https://macbre.github.io/data-flow-graph/)
 
 ## `dataflow.tsv`
