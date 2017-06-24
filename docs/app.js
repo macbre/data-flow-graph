@@ -34,6 +34,8 @@ var OPACITY = {
   LAYOUT_INTERATIONS = 20,
   REFRESH_INTERVAL = 7000;
 
+var exampleLinks;
+
 var formatNumber = function (d) {
   var numberFormat = d3.format(",.0f"); // zero decimal places
   return "£" + numberFormat(d);
@@ -573,7 +575,8 @@ function visualize(dataflow, subtitle) {
 		};
 	});
 
-	var exampleLinks = columns.map(function(line) {
+	// global varitable!
+	exampleLinks = columns.map(function(line) {
 		var weight = line[3] && parseFloat(line[3]) || 1;
 
 		weight = Math.max(weight, 0.0001);
