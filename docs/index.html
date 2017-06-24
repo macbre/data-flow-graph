@@ -82,5 +82,12 @@ ImageBot	upload	s3:s.elecena.pl	1.0000	522.1 requests/hour
     <script src="https://d3js.org/d3.v3.min.js"></script>
     <script src="https://cdn.rawgit.com/Neilos/bihisankey/master/bihisankey.js"></script>
     <script src="app.js"></script>
+
+    <script>
+       (function() {
+         var node = document.getElementById('dataflow');
+         visualize(node.text, node.getAttribute('data-name'));
+       })();
+    </script>
   </body>
 </html>
