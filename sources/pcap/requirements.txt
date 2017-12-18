@@ -1,1 +1,1 @@
-pypcapfile==0.12.0
+scapy==2.3.3
