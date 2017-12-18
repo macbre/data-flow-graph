@@ -48,7 +48,9 @@ def parse(f, proto):
 	packets = rdpcap(f)
 	packets_count = len(packets)
 
-	logger.info('Packets read: %d / %s', packets_count, repr(packets))
+	packets_time_diff = packets[-1].time - packets[0].time
+
+	logger.info('Packets read: %d in %.2f sec / %s', packets_count, packets_time_diff, repr(packets))
 	logger.info('First one: %s', repr(packets[0]))
 	logger.info('Last one: %s', repr(packets[-1]))
 
@@ -69,7 +71,7 @@ def parse(f, proto):
 	packets = filter(lambda x: x is not None, packets)
 	packets = set(packets)
 
-	print('# processed {} packets as {}'.format(packets_count, proto))
+	print('# processed {} packets sniffed in {:.2f} sec as {}'.format(packets_count, packets_time_diff, proto))
 	print('\n'.join(packets))
 
 
