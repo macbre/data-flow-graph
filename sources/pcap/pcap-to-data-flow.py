@@ -41,7 +41,7 @@ def parse_redis_packet(packet):
 
 def parse(f, proto):
 	logger = logging.getLogger('pcap-to-data-flow')
-	logger.info('Reading %s as %s proto ..', repr(f), proto)
+	logger.info('Reading %s as %s proto ...', repr(f), proto)
 
 	# @see http://kisom.github.io/pypcapfile/
 	# @see https://stackoverflow.com/questions/42963343/reading-pcap-file-with-scapy
@@ -51,8 +51,8 @@ def parse(f, proto):
 	packets_time_diff = packets[-1].time - packets[0].time
 
 	logger.info('Packets read: %d in %.2f sec / %s', packets_count, packets_time_diff, repr(packets))
-	logger.info('First one: %s', repr(packets[0]))
-	logger.info('Last one: %s', repr(packets[-1]))
+	# logger.info('First one: %s', repr(packets[0]))
+	# logger.info('Last one: %s', repr(packets[-1]))
 
 	packets = [
 		(packet['IP'], packet['Raw'])
