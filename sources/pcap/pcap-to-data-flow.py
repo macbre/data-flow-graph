@@ -46,7 +46,7 @@ def normalize_host(ip):
 	hostname = gethostbyaddr(ip)[0]
 	hostname = hostname.split('.')[0]
 
-	if hostname.startswith('mq-'):
+	if not hostname.startswith('ap-'):
 		return hostname
 	else:
 		# ap-s200 -> ap-s*
