@@ -3,8 +3,16 @@ pcap
 
 ## Run `ngrep`
 
+### redis
+
 ```
 sudo ngrep -d any -q 'mq::' 'port 56379' -n 2000 -O redis.pcap 
+```
+
+### scribe
+
+```
+sudo ngrep -d any -q '..Log..' port 9090 or 1463 or 5095 or 5088 or 9900 -n 10000 -O scribe.pcap
 ```
 
 ## Process the pcap file
