@@ -46,7 +46,7 @@ def normalize_host(ip):
 	hostname = gethostbyaddr(ip)[0]
 	hostname = hostname.split('.')[0]
 
-	if hostname == 'mq-s2':
+	if hostname.startswith('mq-'):
 		return hostname
 	else:
 		# ap-s200 -> ap-s*
@@ -77,14 +77,14 @@ def parse_scribe_packet(packet):
 
 		if src == 'mq-s2':
 			# scribe pushes data out
-			return '{source}\t{edge}\t{target}'.format(
+			return '{source}\t{edge}\tdst:{target}'.format(
 				target=dst,
 				edge='scribe',
 				source=category
 			)
 		else:
 			# data is pushed to scribe
-			return '{source}\t{edge}\t{target}'.format(
+			return 'src:{source}\t{edge}\t{target}'.format(
 				target=category,
 				edge='scribe',
 				source=src
