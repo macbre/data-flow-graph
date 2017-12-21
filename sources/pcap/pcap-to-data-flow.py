@@ -2,6 +2,7 @@ import logging
 import re
 import sys
 
+from collections import Counter  # https://docs.python.org/2/library/collections.html#collections.Counter
 from socket import gethostbyaddr
 
 from scapy.all import rdpcap
@@ -19,7 +20,7 @@ def parse_redis_packet(packet):
 		# print(cmd, arg)
 
 		cmd = cmd.strip().lower()
-		arg = arg.lower()
+		arg = arg.lower().strip()
 
 		if cmd == 'lpop':
 			# take from the queue
@@ -124,9 +125,17 @@ def parse(f, proto):
 	else:
 		raise Exception('Unsupported proto: %s', proto)
 
-	# remove empty entries and duplicates
+	# remove empty entries
 	packets = filter(lambda x: x is not None, packets)
-	packets = set(packets)
+
+	# and sort starting with the most frequent ones
+	stats = Counter(packets)
+	(_, top_freq) = stats.most_common(1)[0]  # the most frequent entry with have edge weight = 1
+
+	packets = [
+		'{}\t{:.4f}'.format(val, 1. * freq / top_freq)
+		for (val, freq) in stats.most_common()
+	]
 
 	print('# processed {} packets sniffed in {:.2f} sec as {}'.format(packets_count, packets_time_diff, proto))
 	print('\n'.join(packets))

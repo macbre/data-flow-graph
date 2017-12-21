@@ -1,5 +1,5 @@
 # processed 2000 packets sniffed in 275.36 sec as redis
-mq::elecena_products::messages	lpop	172.17.0.3
-86.105.54.80	rpush	mq::elecena_products::messages
-mq::elecena_products::messages	lpop	86.105.54.80
-86.105.54.80	rpush	mq::elecena_datasheets::messages
+mq::elecena_products::messages	lpop	172.17.0.3	1.0000
+mq::elecena_products::messages	lpop	86.105.54.80	0.5018
+86.105.54.80	rpush	mq::elecena_datasheets::messages	0.1816
+86.105.54.80	rpush	mq::elecena_products::messages	0.0073
