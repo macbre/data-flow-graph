@@ -11,6 +11,30 @@ from scapy.all import rdpcap
 logging.basicConfig(level=logging.INFO)
 
 
+hosts_cache = dict()
+
+def normalize_host(ip):
+	def resolve_host(ip):
+		try:
+			hostname = gethostbyaddr(ip)[0]
+		except herror:
+			# socket.herror: [Errno 1] Unknown host
+			return ip
+
+		hostname = hostname.split('.')[0]
+
+		if not hostname.startswith('ap-'):
+			return hostname
+		else:
+			# ap-s200 -> ap-s*
+			return re.sub(r'\d+$', '*', hostname)
+
+	if ip not in hosts_cache:
+		hosts_cache[ip] = resolve_host(ip)
+
+	return hosts_cache[ip]
+
+
 def parse_redis_packet(packet):
 	(ip, raw) = packet
 
@@ -25,14 +49,14 @@ def parse_redis_packet(packet):
 		if cmd == 'lpop':
 			# take from the queue
 			return '{source}\t{edge}\t{target}'.format(
-				target=ip.src,
+				target=normalize_host(ip.src),
 				edge=cmd,
 				source=arg
 			)
 		elif cmd == 'rpush':
 			# push the queue
 			return '{source}\t{edge}\t{target}'.format(
-				source=ip.src,
+				source=normalize_host(ip.src),
 				edge=cmd,
 				target=arg
 			)
@@ -41,22 +65,6 @@ def parse_redis_packet(packet):
 
 	except ValueError:
 		return None
-
-
-def normalize_host(ip):
-	try:
-		hostname = gethostbyaddr(ip)[0]
-	except herror:
-		# socket.herror: [Errno 1] Unknown host
-		return ip
-
-	hostname = hostname.split('.')[0]
-
-	if not hostname.startswith('ap-'):
-		return hostname
-	else:
-		# ap-s200 -> ap-s*
-		return re.sub(r'\d+$', '*', hostname)
 
 
 def parse_scribe_packet(packet):
@@ -104,9 +112,9 @@ def parse_raw_packet(packet):
 	(ip, _) = packet
 
 	return '{source}\t{edge}\t{target}'.format(
-		source=ip.src,
+		source=normalize_host(ip.src),
 		edge='',
-		target=ip.dst,
+		target=normalize_host(ip.dst),
 	)
 
 
@@ -121,7 +129,7 @@ def parse(f, proto=None):
 
 	packets_time_diff = packets[-1].time - packets[0].time
 
-	logger.info('Packets read: %d in %.2f sec / %s', packets_count, packets_time_diff, repr(packets))
+	logger.info('Packets read: %d / sniffed in %.2f sec / %s', packets_count, packets_time_diff, repr(packets))
 	# logger.info('First one: %s', repr(packets[0]))
 	# logger.info('Last one: %s', repr(packets[-1]))
 
