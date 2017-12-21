@@ -3,6 +3,14 @@ pcap
 
 ## Run `ngrep`
 
+### raw
+
+This protocol will be used by default. Only src and dest IP addresses will be used to prepare data for TVS data-flow file.
+
+```
+sudo ngrep -d any -q 'POST /' 'port 59666 and host 1.2.3.4' -n 500 -O server.pcap
+```
+
 ### redis
 
 ```
@@ -16,6 +24,10 @@ sudo ngrep -d any -q '..Log..' port 9090 or 1463 or 5095 or 5088 or 9900 -n 1000
 ```
 
 ## Process the pcap file
+
+```
+python pcap-to-data-flow.py <PCAP file> [optional protocol - will extract more details]
+```
 
 ```
 python pcap-to-data-flow.py redis.pcap redis > example.tsv

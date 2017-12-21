@@ -3,7 +3,7 @@ import re
 import sys
 
 from collections import Counter  # https://docs.python.org/2/library/collections.html#collections.Counter
-from socket import gethostbyaddr
+from socket import gethostbyaddr, herror
 
 from scapy.all import rdpcap
 
@@ -44,7 +44,12 @@ def parse_redis_packet(packet):
 
 
 def normalize_host(ip):
-	hostname = gethostbyaddr(ip)[0]
+	try:
+		hostname = gethostbyaddr(ip)[0]
+	except herror:
+		# socket.herror: [Errno 1] Unknown host
+		return ip
+
 	hostname = hostname.split('.')[0]
 
 	if not hostname.startswith('ap-'):
@@ -95,7 +100,17 @@ def parse_scribe_packet(packet):
 		return None
 
 
-def parse(f, proto):
+def parse_raw_packet(packet):
+	(ip, _) = packet
+
+	return '{source}\t{edge}\t{target}'.format(
+		source=ip.src,
+		edge='',
+		target=ip.dst,
+	)
+
+
+def parse(f, proto=None):
 	logger = logging.getLogger('pcap-to-data-flow')
 	logger.info('Reading %s as %s proto ...', repr(f), proto)
 
@@ -122,6 +137,8 @@ def parse(f, proto):
 		packets = map(parse_redis_packet, packets)
 	elif proto =='scribe':
 		packets = map(parse_scribe_packet, packets)
+	elif proto is None:
+		packets = map(parse_raw_packet, packets)
 	else:
 		raise Exception('Unsupported proto: %s', proto)
 
@@ -142,4 +159,10 @@ def parse(f, proto):
 
 
 if __name__ == "__main__":
-	parse(sys.argv[1], sys.argv[2])
+	if len(sys.argv) > 2:
+		(pcap_file, proto) = sys.argv[1:3]
+	else:
+		pcap_file = sys.argv[1]
+		proto = None
+
+	parse(pcap_file, proto)
