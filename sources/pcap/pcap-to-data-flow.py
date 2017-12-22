@@ -8,20 +8,27 @@ from socket import gethostbyaddr, herror
 from scapy.all import rdpcap
 
 
-logging.basicConfig(level=logging.INFO)
-
+logging.basicConfig(
+	level=logging.INFO,
+	format='%(asctime)s %(name)-25s %(levelname)-8s %(message)s',
+	datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 hosts_cache = dict()
 
 def normalize_host(ip):
 	def resolve_host(ip):
+		logger = logging.getLogger('resolve_host')
+
 		try:
 			hostname = gethostbyaddr(ip)[0]
-		except herror:
+		except herror as e:
 			# socket.herror: [Errno 1] Unknown host
+			logger.error("Unable to resolve %s: %s", ip, e)
 			return ip
 
 		hostname = hostname.split('.')[0]
+		logger.info("%s is known as %s", ip, hostname)
 
 		if not hostname.startswith('ap-'):
 			return hostname
