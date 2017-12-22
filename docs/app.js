@@ -551,7 +551,8 @@ function visualize(dataflow, subtitle) {
 	});
 	**/
 
-	console.log(nodes);
+	console.log('Columns', columns);
+	console.log('Nodes', nodes);
 
 	// prepare nodes and links for biHiSankey library
 	var exampleNodes = nodes.map(function(node, iter) {
