@@ -17,7 +17,7 @@ This can be extended to handle:
 
 ## Graphs sharing
 
-For easy dataflow sharing you can **[upload](https://gist.github.com/macbre/ddf5742b8293062cc78b767fccb5197b) graph data in TSV form to Gist** and [**have it visualized**](https://macbre.github.io/data-flow-graph/gist.html#ddf5742b8293062cc78b767fccb5197b).
+For easy dataflow sharing you can **[upload](https://gist.github.com/macbre/ddf5742b8293062cc78b767fccb5197b) graph data in TSV form to Gist** and [**have it visualized**](https://macbre.github.io/data-flow-graph/gist.html#ddf5742b8293062cc78b767fccb5197b). [Specific gist revisions](https://macbre.github.io/data-flow-graph/gist.html#ef35fb2e6ea7cc617d59090ab1e89618@e3cadc15b51967093a5eae1dff8229cffb0df120) are also supported.
 
 ## `dataflow.tsv`
 
