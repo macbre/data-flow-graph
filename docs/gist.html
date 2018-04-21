@@ -30,7 +30,8 @@
 		visualize(file.content, summary);
         }
 
-	var url = document.location.hash.replace(/^#/, ''); // e.g. ddf5742b8293062cc78b767fccb5197b
+	var url = document.location.hash.replace(/^#/, ''), // e.g. ddf5742b8293062cc78b767fccb5197b
+		rev;
 
 	// prompt for URL, e.g. https://gist.github.com/macbre/ddf5742b8293062cc78b767fccb5197b
 	while (url === '') {
@@ -38,16 +39,23 @@
 
 		// ok, we have a valid Gist URL, update the address bar
 		if (/gist.github.com/.test(gist)) {
-			url = gist.split('/').pop();
+			url = gist.split('/').slice(4).join('@');
 			document.location.hash = '#' + url;
 		}
 	}
 
-	console.log('Rendering ' + url + ' Gist...');
+	// handle id@sha1 URLs that point to specific gist revision (#19)
+	if (url.indexOf('@') > -1) {
+		var parts = url.split('@');
+		url = parts[0];
+		rev = parts[1];
+	}
+
+	console.log('Rendering ' + url + ' Gist (revision ' + (rev || 'HEAD') + ')...');
 
 	// load Gist via GitHub API
 	var script = document.createElement('script');
-	script.src = 'https://api.github.com/gists/' + url + '?callback=getTsvFromGist';
+	script.src = 'https://api.github.com/gists/' + url + (rev ? '/' + rev : '') + '?callback=getTsvFromGist';
 	document.body.appendChild(script);
     </script>
   </body>
