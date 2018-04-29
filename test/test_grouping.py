@@ -1,4 +1,4 @@
-from data_flow_graph import logs_map_and_reduce
+from data_flow_graph import logs_map_and_reduce, format_tsv_line
 
 
 def _get_logs():
@@ -58,3 +58,7 @@ def test_logs_grouping():
     assert grouped[2]['target'] == 'serviceA'
     assert grouped[2]['metadata'] == '5 requests'
     assert grouped[2]['value'] == 0.25
+
+    assert format_tsv_line(**grouped[0]) == 'web\thttp\tserviceA\t0.7500\t15 requests'
+    assert format_tsv_line(**grouped[1]) == 'web\thttp\tserviceB\t1.0000\t20 requests'
+    assert format_tsv_line(**grouped[2]) == 'cron\thttp\tserviceA\t0.2500\t5 requests'
