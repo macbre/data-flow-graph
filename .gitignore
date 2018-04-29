@@ -103,3 +103,6 @@ ENV/
 *.swp
 *.pcap
 *.tsv
+
+.idea/
+env*/
