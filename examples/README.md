@@ -1,8 +1,9 @@
 Examples
 ========
 
-## .dot file
+## .gv file
 
 ```
-dot example.dot -T svg > graph.svg
+apt-get install graphviz
+dot graph.gv -T svg > graph.svg
 ```
