@@ -24,6 +24,16 @@ def format_tsv_line(source, edge, target, value=None, metadata=None):
     ).rstrip(' \t')
 
 
+def format_tsv_lines(lines):
+    """
+    Render a set of data into a list of TSV-formatted lines
+
+    :type lines list[dict]
+    :rtype: list[str]
+    """
+    return [format_tsv_line(**line) for line in lines]
+
+
 def logs_map_and_reduce(logs, _map, _reduce):
     """
     :type logs str[]
