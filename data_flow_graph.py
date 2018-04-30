@@ -61,7 +61,8 @@ def format_graphviz_lines(lines):
     # some basic style definition
     graph.append('digraph G {')
     graph.append('\tgraph [ center=true, margin=0.75, nodesep=0.5, ranksep=0.75, rankdir=LR ];')
-    graph.append('\tnode [ shape=box, style="rounded,filled" width=0, height=0, fontname=Helvetica, fontsize=11 ];')
+    graph.append('\tnode [ shape=box, style="rounded,filled" width=0, height=0, '
+                 'fontname=Helvetica, fontsize=11 ];')
     graph.append('\tedge [ fontname=Helvetica, fontsize=9 ];')
 
     # emit nodes definition
@@ -83,7 +84,8 @@ def format_graphviz_lines(lines):
         graph.append('\t{name} [label="{label}"{group}];'.format(
             name=name,
             label=label,
-            group=' group="{}" colorscheme=pastel28 color={}'.format(group, group_colors[group]) if group is not None else ''
+            group=' group="{}" colorscheme=pastel28 color={}'.format(
+                group, group_colors[group]) if group is not None else ''
         ))
 
     # now, connect the nodes
