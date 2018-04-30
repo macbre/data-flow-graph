@@ -1,0 +1,16 @@
+digraph G {
+	graph [ center=true, margin=0.75, nodesep=0.5, ranksep=0.75, rankdir=LR ];
+	node [ shape=box, style="rounded,filled" width=0, height=0, fontname=Helvetica, fontsize=11 ];
+	edge [ fontname=Helvetica, fontsize=9 ];
+
+	// nodes
+	n1 [label="bar"];
+	n2 [label="foo:table" group="db" colorscheme=pastel28 color=1];
+	n3 [label="foo2"];
+	n4 [label="bar" group="web" colorscheme=pastel28 color=2];
+
+	// edges
+	n2 -> n1 [];
+	n3 -> n4 [label="test"];
+	n4 -> n3 [label="QPS 4.5"];
+}
