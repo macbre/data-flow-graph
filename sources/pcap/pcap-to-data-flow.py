@@ -30,7 +30,7 @@ def normalize_host(ip):
 		hostname = hostname.split('.')[0]
 		logger.info("%s is known as %s", ip, hostname)
 
-		if not hostname.startswith('ap-'):
+		if not hostname.startswith('ap-') and not hostname.startswith('task-'):
 			return hostname
 		else:
 			# ap-s200 -> ap-s*
