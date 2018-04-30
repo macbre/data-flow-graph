@@ -1,0 +1,5 @@
+# processed 100 packets sniffed in 9.00 sec as scribe
+src:ap-s*	scribe	log_edit	1.0000
+log_edit	scribe	dst:indexer-s2	0.3667
+src:ap-s*	scribe	log_create	0.2000
+log_create	scribe	dst:indexer-s2	0.1000
