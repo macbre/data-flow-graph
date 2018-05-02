@@ -83,7 +83,7 @@ def format_graphviz_lines(lines):
 
         graph.append('\t{name} [label="{label}"{group}];'.format(
             name=name,
-            label=label,
+            label="{}\\n{}".format(group, label) if group is not None else label,
             group=' group="{}" colorscheme=pastel28 color={}'.format(
                 group, group_colors[group]) if group is not None else ''
         ))
