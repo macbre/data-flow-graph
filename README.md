@@ -62,7 +62,7 @@ You can write your own tool to analyze logs. It just needs to emit TSV file that
 pip install data_flow_graph
 ```
 
-Please refer to `/test` directory for examples on how to use helper functions to generate TSV-formatted data flows.
+Please refer to `/test` directory for examples on how to use helper functions to generate graphviz and TSV-formatted data flows.
 
 ## Links
 
