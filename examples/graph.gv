@@ -5,9 +5,9 @@ digraph G {
 
 	// nodes
 	n1 [label="bar"];
-	n2 [label="foo:table" group="db" colorscheme=pastel28 color=1];
+	n2 [label="db\nfoo:table" group="db" colorscheme=pastel28 color=1];
 	n3 [label="foo2"];
-	n4 [label="bar" group="web" colorscheme=pastel28 color=2];
+	n4 [label="web\nbar" group="web" colorscheme=pastel28 color=2];
 
 	// edges
 	n2 -> n1 [];
