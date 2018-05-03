@@ -3,7 +3,7 @@
 [![PyPI](https://img.shields.io/pypi/v/data_flow_graph.svg)](https://pypi.python.org/pypi/data_flow_graph)
 [![Build Status](https://travis-ci.org/macbre/data-flow-graph.svg?branch=master)](https://travis-ci.org/macbre/data-flow-graph)
 
-![](https://raw.githubusercontent.com/macbre/data-flow-graph/master/docs/data-flow-example.png)
+![Graphviz example](https://raw.githubusercontent.com/macbre/data-flow-graph/master/docs/data-flow-example.png)
 
 Takes application logs from Elasticsearch (because you do have logs, right?) and **visualizes how your data flow through the database** allowing you to quickly identify **which parts of your code inserts / updates / deletes / reads data from specific DB tables**.
 
@@ -16,6 +16,7 @@ This can be extended to handle:
 * (*use your imagintation*)
 
 `data-flow-graph` uses [d3.js](https://d3js.org/) library to visualize the data flow (heavily inspired by [this demo](http://bl.ocks.org/Neilos/584b9a5d44d5fe00f779) by Neil Atkinson).
+Alternatively, you can generate `*.gv` file and render it using [Graphviz](https://www.graphviz.org/).
 
 # [Live demo](https://macbre.github.io/data-flow-graph/)
 
@@ -62,7 +63,7 @@ You can write your own tool to analyze logs. It just needs to emit TSV file that
 pip install data_flow_graph
 ```
 
-Please refer to `/test` directory for examples on how to use helper functions to generate graphviz and TSV-formatted data flows.
+Please refer to `/test` directory for examples on how to use helper functions to generate Graphviz and TSV-formatted data flows.
 
 ## Links
 
