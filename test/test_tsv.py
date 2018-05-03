@@ -26,4 +26,4 @@ def test_format_lines():
         },
     ]
 
-    assert '\n'.join(format_tsv_lines(lines)) == 'foo\tselect\tbar\nfoo2\tselect\tbar\t0.5000\ttest'
+    assert ''.join(format_tsv_lines(lines)) == 'foo\tselect\tbar\nfoo2\tselect\tbar\t0.5000\ttest\n'

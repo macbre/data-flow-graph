@@ -31,7 +31,7 @@ def format_tsv_lines(lines):
     :type lines list[dict]
     :rtype: list[str]
     """
-    return [format_tsv_line(**line) for line in lines]
+    return [format_tsv_line(**line) + '\n' for line in lines]
 
 
 def format_graphviz_lines(lines):
