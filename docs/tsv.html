@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>data-flow-graph | Example</title>
+    <link href="style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Monda&amp;subset=latin-ext" rel="stylesheet">
+  </head>
+  <body>
+    <h1>data-flow-graph</h1>
+    <h2 id="subtitle"></h2>
+
+    <cite><a href="https://github.com/macbre/data-flow-graph">github.com/macbre/data-flow-graph</a></cite>
+
+    <div id="chart"></div>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://cdn.rawgit.com/Neilos/bihisankey/master/bihisankey.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+	var url = document.location.hash.replace(/^#/, '') || null; // e.g. https://s3.amazonaws.com/s3.macbre.net/data_flow/database.tsv
+
+	// prompt for URL
+	while (url === null) {
+		var url = prompt('Please provide URL of TSV file');
+
+		// ok, we have a valid URL, update the address bar
+		if (/^http/.test(url)) {
+			document.location.hash = '#' + url;
+		}
+	}
+
+	console.log('Rendering ' + url + ' TSV file...');
+
+	d3.xhr(url, function(resp) {
+		var tsv = resp.responseText.trim();
+
+		console.log(tsv);
+		visualize(tsv);
+	});
+    </script>
+  </body>
+</html>
