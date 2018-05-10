@@ -22,7 +22,13 @@ Alternatively, you can generate `*.gv` file and render it using [Graphviz](https
 
 ## Graphs sharing
 
+### Via Gist
+
 For easy dataflow sharing you can **[upload](https://gist.github.com/macbre/ddf5742b8293062cc78b767fccb5197b) graph data in TSV form to Gist** and [**have it visualized**](https://macbre.github.io/data-flow-graph/gist.html#ddf5742b8293062cc78b767fccb5197b). [Specific gist revisions](https://macbre.github.io/data-flow-graph/gist.html#ef35fb2e6ea7cc617d59090ab1e89618@e3cadc15b51967093a5eae1dff8229cffb0df120) are also supported.
+
+### Via s3
+
+You can also **upload TSV file to your s3 bucket** (and have [CORS set up there](https://github.com/macbre/data-flow-graph/issues/20)). Navigate to [tsv.html](https://macbre.github.io/data-flow-graph/tsv.html) or [check the example](https://macbre.github.io/data-flow-graph/tsv.html#https://s3.amazonaws.com/s3.macbre.net/data_flow/database.tsv) from [elecena.pl](https://github.com/elecena/data-flow/tree/master/output).
 
 ## `dataflow.tsv`
 
