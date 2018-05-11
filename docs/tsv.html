@@ -33,10 +33,15 @@
 	console.log('Rendering ' + url + ' TSV file...');
 
 	d3.xhr(url, function(resp) {
-		var tsv = resp.responseText.trim();
+		var tsv = resp.responseText.trim(),
+			subtitle, matches = tsv.match(/^#(.*)\n/);
 
-		console.log(tsv);
-		visualize(tsv);
+		if (matches) {
+			subtitle = matches[1].trim();
+		}
+
+		console.log(tsv, subtitle);
+		visualize(tsv, subtitle);
 	});
     </script>
   </body>
