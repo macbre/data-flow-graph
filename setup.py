@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '0.4'
+VERSION = '0.4.1'
 
 # @see https://github.com/pypa/sampleproject/blob/master/setup.py
 setup(
