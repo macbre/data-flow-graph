@@ -4,12 +4,12 @@ install:
 	pip install -e .[dev]
 
 test:
-	py.test
+	py.test -vv
 
 coverage:
 	rm -f .coverage*
 	rm -rf htmlcov/*
-	coverage run -p -m py.test
+	coverage run -p -m py.test -vv
 	coverage combine
 	coverage html -d htmlcov $(coverage_options)
 	coverage xml -i

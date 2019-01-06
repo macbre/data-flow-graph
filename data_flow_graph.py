@@ -34,6 +34,14 @@ def format_tsv_lines(lines):
     return [format_tsv_line(**line) + '\n' for line in lines]
 
 
+def escape_graphviz_entry(entry):
+    """
+    :type entry str
+    :rtype: str
+    """
+    return entry.replace('"', '\\"')
+
+
 def format_graphviz_lines(lines):
     """
     Render a .dot file with graph definition from a given set of data
@@ -59,7 +67,10 @@ def format_graphviz_lines(lines):
     graph = list()
 
     # some basic style definition
+    # https://graphviz.gitlab.io/_pages/doc/info/lang.html
     graph.append('digraph G {')
+
+    # https://graphviz.gitlab.io/_pages/doc/info/shapes.html#record
     graph.append('\tgraph [ center=true, margin=0.75, nodesep=0.5, ranksep=0.75, rankdir=LR ];')
     graph.append('\tnode [ shape=box, style="rounded,filled" width=0, height=0, '
                  'fontname=Helvetica, fontsize=11 ];')
@@ -81,6 +92,8 @@ def format_graphviz_lines(lines):
         else:
             group = None
 
+        label = escape_graphviz_entry(label)
+
         graph.append('\t{name} [label="{label}"{group}];'.format(
             name=name,
             label="{}\\n{}".format(group, label) if group is not None else label,
@@ -96,7 +109,7 @@ def format_graphviz_lines(lines):
         graph.append('\t{source} -> {target} [{label}];'.format(
             source=nodes[line['source']],
             target=nodes[line['target']],
-            label='label="{}"'.format(label) if label != '' else ''
+            label='label="{}"'.format(escape_graphviz_entry(label)) if label != '' else ''
         ))
 
     graph.append('}')
