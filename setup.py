@@ -41,9 +41,9 @@ setup(
     py_modules=["data_flow_graph"],
     extras_require={
         'dev': [
-            'coverage==4.5.1',
-            'pylint==1.8.2',
-            'pytest==3.4.0',
+            'coverage==4.5.2',
+            'pylint>=1.9.2, <=2.1.1',  # 2.x branch is for Python 3
+            'pytest==4.0.0',
         ]
     }
 )
