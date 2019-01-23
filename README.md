@@ -71,6 +71,43 @@ pip install data_flow_graph
 
 Please refer to `/test` directory for examples on how to use helper functions to generate Graphviz and TSV-formatted data flows.
 
+### Generating graphviz's dot file
+
+```python
+from data_flow_graph import format_graphviz_lines
+
+lines = [{
+    'source': 'Foo "bar" test',
+    'metadata': '"The Edge"',
+    'target': 'Test "foo" 42',
+}]
+
+graph = format_graphviz_lines(lines)
+```
+
+### Generating TSV file
+
+```python
+from data_flow_graph import format_tsv_lines
+
+lines = [
+    {
+        'source': 'foo',
+        'edge': 'select',
+        'target': 'bar',
+    },
+    {
+        'source': 'foo2',
+        'edge': 'select',
+        'target': 'bar',
+        'value': 0.5,
+        'metadata': 'test'
+    },
+]
+
+tsv = format_tsv_lines(lines)
+```
+
 ## Links
 
 * [vis.js](https://github.com/almende/vis) for visualization ([a graph example](http://etn.io/))
